@@ -1,9 +1,10 @@
-name: 혜광전과초등 앱 만들기
+name: 초등혜광전과 앱 만들기
 
 # 혜광전과초등 안드로이드 앱 순서표예요. 이 파일 하나에 앱 껍데기와 바꾸는 도구가 다 들어 있어요.
 # - 앱 내용(index.html, notes.txt, apps 폴더)을 올리면: 칠판 엔진(크롬 83)용으로 바꿔서 '내려받기 칸(content)'에 올려요.
 #   칠판의 앱은 켤 때 바뀐 파일만 내려받아요. (앱을 다시 깔 필요 없어요)
-# - 이 순서표를 바꾸면: 앱 껍데기(APK)를 새로 만들어 '내려받기 칸(apk)'에 올려요.
+# - 이 순서표를 바꾸면: 플레이스토어에 올릴 앱 껍데기(AAB)를 새로 만들어 '내려받기 칸(store)'에 올려요.
+#   (2026-11-20부터 스토어 판. 칠판에 직접 까는 APK 판은 더 만들지 않아요)
 on:
   push:
     branches: [main]
@@ -45,7 +46,7 @@ jobs:
             echo "$F" | grep -q '^\.github/workflows/' && K=1
           fi
           gh release view content >/dev/null 2>&1 || C=1
-          gh release view apk >/dev/null 2>&1 || K=1
+          gh release view store >/dev/null 2>&1 || K=1
           [ -f index.html ] || C=0
           echo "content=$C" >> "$GITHUB_OUTPUT"; echo "apk=$K" >> "$GITHUB_OUTPUT"
           echo "내용 만들기=$C, 앱 껍데기 만들기=$K"
@@ -192,7 +193,7 @@ jobs:
         if: steps.chg.outputs.apk == '1'
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.9'
+          gradle-version: '8.11.1'
 
       - name: 앱 껍데기 파일 펼치기
         if: steps.chg.outputs.apk == '1'
@@ -222,7 +223,7 @@ jobs:
           mkdir -p "$(dirname 'android/build.gradle')"
           cat > 'android/build.gradle' <<'HGEOF'
           plugins {
-              id 'com.android.application' version '8.5.2' apply false
+              id 'com.android.application' version '8.10.1' apply false
           }
           HGEOF
 
@@ -239,19 +240,21 @@ jobs:
               id 'com.android.application'
           }
 
-          // GitHub에서 만들 때마다 번호가 1씩 올라가서, 새 앱을 깔면 예전 앱 위에 바로 덮어 깔려요. (진도는 그대로)
+          // 스토어에 올릴 때마다 번호(versionCode)가 올라가야 해요. GitHub에서 만들 때마다 1씩 올라가요.
           def runNumber = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+          // 선생님들께 보이는 버전 이름이에요. 패치할 때 1.02, 1.05, 1.1 처럼 이 숫자만 바꾸면 돼요.
+          def appVersion = '1.0'
 
           android {
               namespace 'io.github.chiwookhan81.hyegwangjeongwacho'
-              compileSdk 34
+              compileSdk 36
 
               defaultConfig {
                   applicationId 'io.github.chiwookhan81.hyegwangjeongwacho'
                   minSdk 24
-                  targetSdk 34
-                  versionCode runNumber
-                  versionName "1.0.${runNumber}"
+                  targetSdk 36
+                  versionCode 1000 + runNumber
+                  versionName appVersion
               }
 
               // 서명 열쇠는 GitHub 비밀 칸(HG_KEYSTORE, HG_KEY_PASSWORD)에서 꺼내 써요. 순서표에는 없어요.
@@ -283,7 +286,7 @@ jobs:
           }
 
           dependencies {
-              implementation 'androidx.webkit:webkit:1.11.0'
+              implementation 'androidx.webkit:webkit:1.14.0'
           }
           HGEOF
 
@@ -313,6 +316,7 @@ jobs:
                   android:roundIcon="@mipmap/ic_launcher"
                   android:label="@string/app_name"
                   android:largeHeap="true"
+                  android:enableOnBackInvokedCallback="true"
                   android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
 
                   <activity
@@ -341,8 +345,13 @@ jobs:
           import android.os.Build;
           import android.os.Bundle;
           import android.speech.tts.TextToSpeech;
+          import android.speech.tts.UtteranceProgressListener;
+          import android.window.OnBackInvokedDispatcher;
+          import android.widget.FrameLayout;
+          import android.graphics.Color;
           import android.view.View;
           import android.view.WindowInsets;
+          import android.graphics.Insets;
           import android.view.WindowInsetsController;
           import android.view.WindowManager;
           import android.webkit.JavascriptInterface;
@@ -376,7 +385,7 @@ jobs:
           import java.util.Locale;
 
           /**
-           * 혜광전과초등 안드로이드 앱 (껍데기).
+           * 초등혜광전과 안드로이드 앱 (껍데기).
            * - 앱 19개(내용)는 GitHub '내려받기 칸(content)'에서 받아 기기에 저장해 둬요.
            * - 켤 때마다 version.json을 보고, 지문이 바뀐 파일만 새로 받아요. (게임 업데이트처럼)
            * - 인터넷이 없으면 마지막으로 받은 판으로 열려요.
@@ -401,6 +410,10 @@ jobs:
               private ValueCallback<Uri[]> fileCallback;
               private TextToSpeech tts;
               private volatile boolean ttsReady = false;
+              // 0: 준비 중, 1: 됨, -1: 안 됨(한국어 목소리 없음 등)
+              private volatile int ttsState = 0;
+              private final List<String[]> ttsWaiting = new ArrayList<>();
+              private boolean ttsWarned = false;
               private volatile boolean busy = false;
               private long lastBack = 0;
 
@@ -413,7 +426,25 @@ jobs:
                   contentDir.mkdirs();
 
                   web = new WebView(this);
-                  setContentView(web);
+                  // 웹뷰를 틀(FrameLayout)에 담아요. 안드로이드 15 이상은 화면 끝까지 그려서,
+                  // 카메라 구멍(노치)에 내용이 가리지 않게 틀에 그만큼 여백을 줘요.
+                  FrameLayout root = new FrameLayout(this);
+                  root.setBackgroundColor(Color.BLACK);
+                  root.addView(web, new FrameLayout.LayoutParams(
+                          FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+                  setContentView(root);
+                  if (Build.VERSION.SDK_INT >= 30) {
+                      root.setOnApplyWindowInsetsListener((v, insets) -> {
+                          Insets i = insets.getInsets(WindowInsets.Type.displayCutout() | WindowInsets.Type.systemBars());
+                          v.setPadding(i.left, i.top, i.right, i.bottom);
+                          return WindowInsets.CONSUMED;
+                      });
+                  }
+                  // 안드로이드 13 이상 뒤로 가기 (16부터는 이 방법만 돼요)
+                  if (Build.VERSION.SDK_INT >= 33) {
+                      getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                              OnBackInvokedDispatcher.PRIORITY_DEFAULT, this::backPressed);
+                  }
 
                   WebSettings s = web.getSettings();
                   s.setJavaScriptEnabled(true);
@@ -483,6 +514,22 @@ jobs:
                           int r = tts.setLanguage(Locale.KOREAN);
                           ttsReady = r != TextToSpeech.LANG_MISSING_DATA && r != TextToSpeech.LANG_NOT_SUPPORTED;
                       }
+                      if (ttsReady) {
+                          tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                              @Override public void onStart(String id) { ttsEvent("start", id); }
+                              @Override public void onDone(String id) { ttsEvent("end", id); }
+                              @Override public void onError(String id) { ttsEvent("error", id); }
+                              @Override public void onStop(String id, boolean interrupted) { ttsEvent("error", id); }
+                          });
+                      }
+                      ttsState = ttsReady ? 1 : -1;
+                      List<String[]> w;
+                      synchronized (ttsWaiting) { w = new ArrayList<>(ttsWaiting); ttsWaiting.clear(); }
+                      for (String[] a : w) {
+                          if (ttsReady) ttsSpeakNow(a);
+                          else ttsEvent("error", a[0]);
+                      }
+                      if (!ttsReady) runOnUiThread(this::ttsWarn);
                   });
 
                   web.loadUrl(UPDATER_URL);
@@ -733,36 +780,84 @@ jobs:
 
               // ───────────── 목소리 ─────────────
 
+              // 목소리 소식(시작·끝·오류)을 화면(모든 틀)에 알려요.
+              private void ttsEvent(String type, String id) {
+                  js("window.__hgTts&&window.__hgTts(" + q(type) + "," + q(id) + ")");
+              }
+
+              private void ttsWarn() {
+                  if (ttsWarned) return;
+                  ttsWarned = true;
+                  Toast.makeText(this, "이 기기에 한국어 목소리가 없어요. 설정 → 텍스트 음성 변환에서 한국어 음성을 받아 주세요.", Toast.LENGTH_LONG).show();
+              }
+
+              // a: [id, text, rate, pitch, volume, flush]
+              private void ttsSpeakNow(String[] a) {
+                  try {
+                      float rate = Float.parseFloat(a[2]), pitch = Float.parseFloat(a[3]), vol = Float.parseFloat(a[4]);
+                      tts.setSpeechRate(rate > 0 ? rate : 1f);
+                      tts.setPitch(pitch > 0 ? pitch : 1f);
+                      Bundle p = new Bundle();
+                      p.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, Math.max(0f, Math.min(1f, vol)));
+                      int mode = "1".equals(a[5]) ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
+                      if (tts.speak(a[1], mode, p, a[0]) != TextToSpeech.SUCCESS) ttsEvent("error", a[0]);
+                  } catch (Exception e) {
+                      ttsEvent("error", a[0]);
+                  }
+              }
+
               private class TtsBridge {
                   @JavascriptInterface
                   public boolean ready() { return ttsReady; }
 
+                  // 0: 준비 중, 1: 됨, -1: 안 됨
+                  @JavascriptInterface
+                  public int state() { return ttsState; }
+
+                  // 웹의 speechSynthesis.speak 처럼 차례대로 줄을 세워 읽어요. 시작·끝을 화면에 알려 줘요.
+                  @JavascriptInterface
+                  public void say(String id, String text, float rate, float pitch, float volume) {
+                      String[] a = { id == null ? "" : id, text == null ? "" : text,
+                              String.valueOf(rate), String.valueOf(pitch), String.valueOf(volume), "0" };
+                      if (ttsState == 1) { ttsSpeakNow(a); return; }
+                      if (ttsState == 0) { synchronized (ttsWaiting) { if (ttsState == 0) { ttsWaiting.add(a); return; } } }
+                      if (ttsState == 1) { ttsSpeakNow(a); return; }
+                      ttsEvent("error", a[0]);
+                      runOnUiThread(MainActivity.this::ttsWarn);
+                  }
+
+                  // 예전 방식 (바로 끊고 읽기). 혹시 쓰는 곳이 있을까 봐 남겨 둬요.
                   @JavascriptInterface
                   public void speak(String text, float rate, float pitch, float volume) {
-                      if (!ttsReady || text == null) return;
-                      tts.setSpeechRate(rate > 0 ? rate : 1f);
-                      tts.setPitch(pitch > 0 ? pitch : 1f);
-                      Bundle p = new Bundle();
-                      p.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, Math.max(0f, Math.min(1f, volume)));
-                      tts.speak(text, TextToSpeech.QUEUE_FLUSH, p, "hg" + System.nanoTime());
+                      String[] a = { "hg" + System.nanoTime(), text == null ? "" : text,
+                              String.valueOf(rate), String.valueOf(pitch), String.valueOf(volume), "1" };
+                      if (ttsState == 1) ttsSpeakNow(a);
                   }
 
                   @JavascriptInterface
-                  public void stop() { if (tts != null) tts.stop(); }
+                  public void stop() {
+                      synchronized (ttsWaiting) { ttsWaiting.clear(); }
+                      if (tts != null) tts.stop();
+                  }
               }
 
               // ───────────── 화면·버튼 ─────────────
 
               // 학생이 실수로 뒤로 가기를 눌러도 바로 닫히지 않게, 두 번 눌러야 닫혀요.
-              @Override
-              public void onBackPressed() {
+              private void backPressed() {
                   long now = System.currentTimeMillis();
                   if (now - lastBack < 2000) {
-                      super.onBackPressed();
+                      finish();
                   } else {
                       lastBack = now;
                       Toast.makeText(this, "한 번 더 누르면 앱이 닫혀요.", Toast.LENGTH_SHORT).show();
                   }
+              }
+
+              @Override
+              @SuppressWarnings("deprecation")
+              public void onBackPressed() {
+                  backPressed();
               }
 
               @Override
@@ -819,7 +914,7 @@ jobs:
           <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width,initial-scale=1">
-          <title>혜광전과초등</title>
+          <title>초등혜광전과</title>
           <style>
             html, body { margin: 0; height: 100%; background: #fdf6ea; font-family: 'Malgun Gothic', sans-serif; color: #4a3428; }
             .wrap { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
@@ -837,7 +932,7 @@ jobs:
           </head>
           <body>
           <div class="wrap">
-            <h1>혜광전과초등</h1>
+            <h1>초등혜광전과</h1>
             <div id="msg">새 판이 있는지 보고 있어요…</div>
             <div class="bar" id="bar"><i id="fill"></i></div>
             <div id="sub"></div>
@@ -966,28 +1061,87 @@ jobs:
 
           mkdir -p "$(dirname 'android/app/src/main/assets/tts-bridge.js')"
           cat > 'android/app/src/main/assets/tts-bridge.js' <<'HGEOF'
-          // 혜광전과 앱용: 웹뷰의 브라우저 '컴퓨터 목소리'(speechSynthesis)는 소리가 나지 않아서
-          // 안드로이드 목소리(TTS)로 바꿔 이어 줍니다. 앱 밖(크롬 등)에서는 아무 일도 하지 않아요.
+          // 혜광전과 앱용 목소리 다리 (스토어 판, 2026-11-20)
+          // 웹뷰에서는 브라우저 '컴퓨터 목소리'(speechSynthesis)가 소리가 나지 않거나 기기마다 달라서,
+          // 늘 안드로이드 목소리(TTS 엔진)로 읽어요. 앱 밖(크롬 등)에서는 아무 일도 하지 않아요.
+          // 웹 표준처럼: 말을 줄 세워 차례대로 읽고, 시작·끝·오류(onstart/onend/onerror)를 알려 줘요.
+          // 앱 안의 여러 틀(iframe)이 같은 목소리를 나눠 써요. 소식은 맨 위 틀에서 모든 틀로 전해져요.
           (function () {
-            if (!window.AndroidTTS) return;
+            var A = window.AndroidTTS;
+            if (!A || typeof A.say !== 'function') return;
             var voices = [{ name: 'Android 한국어', lang: 'ko-KR', default: true, localService: true, voiceURI: 'android-tts' }];
+            var tag = 'f' + Math.random().toString(36).slice(2, 8) + '_';
+            var seq = 0, live = {}, liveCount = 0;
+
             function Utterance(text) {
               this.text = text || ''; this.lang = 'ko-KR'; this.voice = null;
               this.rate = 1; this.pitch = 1; this.volume = 1;
+              this.onstart = null; this.onend = null; this.onerror = null;
+              this.onpause = null; this.onresume = null; this.onboundary = null; this.onmark = null;
+              this._ls = {};
             }
+            Utterance.prototype.addEventListener = function (t, f) { (this._ls[t] = this._ls[t] || []).push(f); };
+            Utterance.prototype.removeEventListener = function (t, f) {
+              var l = this._ls[t]; if (!l) return; var i = l.indexOf(f); if (i >= 0) l.splice(i, 1);
+            };
+            function fire(u, type, extra) {
+              var ev = { type: type, target: u, utterance: u, charIndex: 0, elapsedTime: 0, name: '' };
+              if (extra) for (var k in extra) ev[k] = extra[k];
+              try { if (typeof u['on' + type] === 'function') u['on' + type](ev); } catch (e) { setTimeout(function () { throw e; }); }
+              var l = (u._ls && u._ls[type]) ? u._ls[type].slice() : [];
+              for (var i = 0; i < l.length; i++) { try { l[i](ev); } catch (e2) { } }
+            }
+            function finish(id, type, extra) {
+              var u = live[id]; if (!u) return;
+              delete live[id]; liveCount--;
+              synth.speaking = liveCount > 0; synth.pending = liveCount > 1;
+              fire(u, type, extra);
+            }
+
             var synth = {
               speaking: false, pending: false, paused: false, onvoiceschanged: null,
               getVoices: function () { return voices; },
               speak: function (u) {
+                if (!u) return;
+                var id = tag + (++seq);
+                live[id] = u; liveCount++;
+                synth.pending = liveCount > 1;
+                var v = (u.volume == null) ? 1 : Number(u.volume);
                 try {
-                  var v = (u.volume == null) ? 1 : Number(u.volume);
-                  window.AndroidTTS.speak(String(u.text || ''), Number(u.rate) || 1, Number(u.pitch) || 1, isNaN(v) ? 1 : v);
-                } catch (e) { }
+                  A.say(id, String(u.text || ''), Number(u.rate) || 1, Number(u.pitch) || 1, isNaN(v) ? 1 : v);
+                } catch (e) {
+                  setTimeout(function () { finish(id, 'error', { error: 'synthesis-unavailable' }); }, 0);
+                }
               },
-              cancel: function () { try { window.AndroidTTS.stop(); } catch (e) { } },
+              // 먼저 소리를 멈추고, 이 틀에서 읽던·기다리던 말에 '끊김'을 알려요. (곧바로 새 말을 해도 그 말은 살아 있어요)
+              cancel: function () {
+                try { A.stop(); } catch (e) { }
+                cancelHere();
+              },
               pause: function () { }, resume: function () { },
-              addEventListener: function () { }, removeEventListener: function () { }
+              addEventListener: function (t, f) { if (t === 'voiceschanged') synth.onvoiceschanged = f; },
+              removeEventListener: function () { },
+              dispatchEvent: function () { return true; }
             };
+
+            function cancelHere() {
+              var ids = Object.keys(live);
+              for (var i = 0; i < ids.length; i++) finish(ids[i], 'error', { error: 'interrupted' });
+            }
+
+            // 안드로이드가 알려 주는 소식: 이 틀 것이면 처리하고, 아래 틀들에도 전해요.
+            window.__hgTts = function (type, id) {
+              if (id && id.indexOf(tag) === 0) {
+                if (type === 'start') { synth.speaking = true; if (live[id]) fire(live[id], 'start'); }
+                else if (type === 'end') finish(id, 'end');
+                else finish(id, 'error', { error: 'synthesis-failed' });
+              }
+              var fr = window.frames;
+              for (var i = 0; i < fr.length; i++) {
+                try { if (fr[i].__hgTts) fr[i].__hgTts(type, id); } catch (e) { }
+              }
+            };
+
             try {
               Object.defineProperty(window, 'speechSynthesis', { value: synth, configurable: true, writable: true });
               Object.defineProperty(window, 'SpeechSynthesisUtterance', { value: Utterance, configurable: true, writable: true });
@@ -995,6 +1149,10 @@ jobs:
               window.speechSynthesis = synth;
               window.SpeechSynthesisUtterance = Utterance;
             }
+            // 목소리 목록을 기다리는 앱을 위해 한 번 알려 줘요.
+            setTimeout(function () {
+              try { if (typeof synth.onvoiceschanged === 'function') synth.onvoiceschanged({ type: 'voiceschanged' }); } catch (e) { }
+            }, 0);
           })();
           HGEOF
 
@@ -1002,7 +1160,7 @@ jobs:
           cat > 'android/app/src/main/res/values/strings.xml' <<'HGEOF'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-              <string name="app_name">혜광전과초등</string>
+              <string name="app_name">초등혜광전과</string>
           </resources>
           HGEOF
 
@@ -2416,18 +2574,26 @@ jobs:
           KDMRa9aBXb36H7ZyDSPAZkwksP8J9OIr4U/kmgIAAAAASUVORK5CYII=
           HGEOF
 
-      - name: APK 만들기
+      - name: 스토어용 AAB 만들기
         if: steps.chg.outputs.apk == '1'
         working-directory: android
-        run: gradle assembleRelease --no-daemon --stacktrace
+        run: gradle bundleRelease --no-daemon --stacktrace
 
-      - name: APK 올리기 (내려받기 칸 apk)
+      - name: AAB 올리기 (내려받기 칸 store)
         if: steps.chg.outputs.apk == '1'
         shell: bash
         run: |
           set -e
-          cp android/app/build/outputs/apk/release/app-release.apk hyegwang-jeongwa-cho.apk
-          gh release delete apk -y --cleanup-tag >/dev/null 2>&1 || true
+          cp android/app/build/outputs/bundle/release/app-release.aab hyegwang-jeongwa-cho.aab
+          gh release delete store -y --cleanup-tag >/dev/null 2>&1 || true
           sleep 3
-          gh release create apk hyegwang-jeongwa-cho.apk --title "혜광전과초등 안드로이드 앱" --latest \
-            --notes "전자칠판·태블릿에 까는 혜광전과초등 앱이에요. (만든 번호 ${{ github.run_number }}) 앱 내용은 켤 때 저절로 새 판을 받아요."
+          gh release create store hyegwang-jeongwa-cho.aab --title "초등혜광전과 플레이스토어 올림 파일" --latest=false \
+            --notes "Play Console에 올리는 초등혜광전과 AAB 파일이에요. (만든 번호 ${{ github.run_number }}, versionCode $((1000 + ${{ github.run_number }}))) 칠판에 직접 까는 파일이 아니에요."
+          rm -f android/signing/release.keystore
+
+      - name: 작업 결과에도 남기기
+        if: steps.chg.outputs.apk == '1'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hyegwang-jeongwa-cho-aab
+          path: hyegwang-jeongwa-cho.aab
