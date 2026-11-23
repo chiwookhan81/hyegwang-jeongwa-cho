@@ -199,6 +199,8 @@ select.field{appearance:none;-webkit-appearance:none}
 #toast{position:absolute;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(30,30,30,.9);color:#fff;padding:12px 18px;border-radius:24px;font-size:15.5px;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}
 #toast.on{opacity:1}
 .hintfab{position:absolute;right:12px;bottom:150px;z-index:15;background:#ffcf33;color:#3a2a00;font-weight:800;border-radius:28px;padding:12px 16px;box-shadow:0 3px 10px rgba(0,0,0,.2);font-size:16px}
+.hintfab.top{top:8px;bottom:auto;padding:8px 14px;font-size:15px}
+.scroll:after{content:"";display:block;height:90px}
 .hintbub{position:absolute;left:12px;right:12px;bottom:206px;z-index:16;background:#fffbe6;border:2px solid #ffcf33;border-radius:14px;padding:14px 44px 14px 14px;font-size:17px;line-height:1.5;box-shadow:0 4px 14px rgba(0,0,0,.15)}
 .hintbub .c{position:absolute;right:6px;top:6px;width:34px;height:34px;font-size:20px}
 .hintbub .s{font-size:14px;color:#8a6d00;display:block;margin-bottom:3px;font-weight:700}
@@ -330,7 +332,7 @@ const STORES=[
  {n:"양념치킨",p:19000,e:"🍗",d:"달콤매콤 양념",pop:1,o:[BONE,SPICY,CHK_OPT]},
  {n:"간장치킨",p:19000,e:"🍗",d:"짭짤달콤 간장 소스",o:[BONE,CHK_OPT]},
  {n:"마늘치킨",i:"마늘통닭",p:20000,e:"🧄",d:"다진 마늘 소스 듬뿍",o:[BONE,CHK_OPT]}]},
-{id:"c3",cat:"치킨",name:"하미네 옛날통닭",e:"🐔",rate:4.7,rv:688,time:"35~50분",tip:2000,min:12000,menus:[
+{id:"c3",cat:"치킨",name:"대롱이네 옛날통닭",e:"🐔",rate:4.7,rv:688,time:"35~50분",tip:2000,min:12000,menus:[
  {n:"옛날통닭",p:13000,e:"🍗",d:"시장 그 맛, 통째로 튀긴 닭",pop:1,o:[{t:"추가 선택",req:0,items:[["한 마리 더",11000],["양념소스 추가",500]]}]},
  {n:"닭똥집튀김",p:12000,e:"🍗",d:"꼬들꼬들 똥집",o:[]}]},
 {id:"c4",cat:"치킨",name:"느티나무 숯불치킨",topping:1,e:"🔥",rate:4.8,rv:1320,time:"35~50분",tip:3000,min:17000,menus:[
@@ -381,7 +383,7 @@ const STORES=[
  {n:"간짜장",p:8500,e:"🍜",d:"즉석에서 볶은 짜장 소스 따로",o:[BIG]},
  {n:"쟁반짜장",p:18000,e:"🍜",d:"2인분, 해물과 함께 볶은 짜장",o:[]},
  {n:"짜장밥",p:8000,e:"🍚",d:"밥 위에 짜장",o:[]}]},
-{id:"j3",cat:"중식",name:"하미 탕수육 전문",e:"🍖",rate:4.8,rv:1245,time:"25~40분",tip:2000,min:15000,menus:[
+{id:"j3",cat:"중식",name:"대롱이 탕수육 전문",e:"🍖",rate:4.8,rv:1245,time:"25~40분",tip:2000,min:15000,menus:[
  {n:"탕수육",p:15000,e:"🍖",d:"바삭한 찹쌀 탕수육",pop:1,o:[{t:"크기",req:1,items:[["소",0],["중",5000]]},{t:"소스",req:1,items:[["부어 주세요",0],["따로 주세요",0]]}]},
  {n:"꿔바로우",p:18000,e:"🍖",d:"쫀득한 찹쌀 탕수육",o:[]},
  {n:"깐풍기",p:20000,e:"🌶️",d:"매콤달콤 닭튀김",o:[]}]},
@@ -472,7 +474,7 @@ const STORES=[
   {t:"이렇게 해 주세요 (여러 개 골라요)",req:0,items:[["해물류는 싫어요",0],["흰 살 생선 위주로 주세요",0],["회만 주세요",0],["매운탕 추가",5000]]}]},
  {n:"물회",p:15000,e:"🥣",d:"새콤달콤 시원한 물회",o:[{t:"빼고 싶은 것 (여러 개 골라요)",req:0,items:[["오이 빼 주세요",0],["배 빼 주세요",0],["소면 빼 주세요",0],["얼음 적게",0]]},{t:"맵기",req:1,items:[["순한맛",0],["보통맛",0],["매운맛",0]]}]}]},
 /* ---------- 족발·보쌈 ---------- */
-{id:"y1",cat:"족발·보쌈",name:"하미 족발",e:"🍖",rate:4.7,rv:1890,time:"40~55분",tip:3000,min:25000,menus:[
+{id:"y1",cat:"족발·보쌈",name:"대롱이 족발",e:"🍖",rate:4.7,rv:1890,time:"40~55분",tip:3000,min:25000,menus:[
  {n:"족발 중",p:32000,e:"🍖",d:"2~3인분",pop:1,o:[]},
  {n:"보쌈 중",p:30000,e:"🥩",d:"2~3인분",o:[]},
  {n:"막국수",p:7000,e:"🍜",d:"",o:[]}]},
@@ -524,7 +526,7 @@ function saveSet(){try{localStorage.setItem("hgbd_set",JSON.stringify(SET))}catc
 const S={screen:"phone",app:"hg",fav:[],stack:[],mission:null,cat:null,store:null,storeTab:"메뉴",sort:"기본순",q:"",
  cart:{store:null,items:[]},orders:[],addr:null,hint:0,modal:null,sel:null,sheet:null,pw:"",viewOrder:null,review:null,pending:null};
 
-const APPS={hg:{name:"혜광배달",e:"🛵",bg:"linear-gradient(135deg,#2ad0c9,#13928c)"},eats:{name:"혜광이츠",e:"♡",bg:"linear-gradient(135deg,#3b8bff,#1257b8)"}};
+const APPS={hg:{name:"밤섬배달",e:"🛵",bg:"linear-gradient(135deg,#2ad0c9,#13928c)"},eats:{name:"밤섬이츠",e:"♡",bg:"linear-gradient(135deg,#3b8bff,#1257b8)"}};
 const APPN=()=>APPS[S.app].name;
 function W(h){return S.app==="eats"?h.replace(/장바구니/g,"카트").replace(/배달팁/g,"배달비"):h}
 function speak(t){t=W(t);if(!SET.tts)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="ko-KR";u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
@@ -569,7 +571,7 @@ V.phone=()=>{const now=new Date(),tm=now.getHours()+":"+String(now.getMinutes())
  return `<div class="phone-bg"><div class="sbar"><b>${tm}</b><span>📶 🔋</span></div>
 <div class="widget"><div class="wtitle">배달 ♡이츠</div><b>📱 배달 앱을 눌러서 들어가요</b><span>어떤 앱으로 주문할지 골라 보세요. 두 앱은 생김새가 달라요.</span>
 <div class="badges"><span>📶 인터넷 필요 없음</span><span>🔒 권한 필요 없음</span><span>🛡️ 정보 유출 없음</span><span>👆 터치만으로 가능</span><span>📖 글 읽기 필요 (읽어주기 지원)</span></div></div>
-<div class="apps">${ic(APPS.hg.e,"혜광배달",APPS.hg.bg,"openApp('hg')","app-hg")}${ic(APPS.eats.e,"혜광이츠",APPS.eats.bg,"openApp('eats')","app-eats")}
+<div class="apps">${ic(APPS.hg.e,"밤섬배달",APPS.hg.bg,"openApp('hg')","app-hg")}${ic(APPS.eats.e,"밤섬이츠",APPS.eats.bg,"openApp('eats')","app-eats")}
 ${ic("📷","카메라","#555","dummyApp()")}${ic("💬","메시지","#34c759","dummyApp()")}
 ${ic("🗓️","달력","#ff9f0a","dummyApp()")}${ic("🎵","음악","#ff375f","dummyApp()")}
 ${ic("📖","사용 설명","#8e8e93","openApp(S.app)")}${ic("⚙️","선생님 설정","#636366","go('settings')")}</div>
@@ -788,10 +790,11 @@ function hintInfo(){const M=S.mission,n=need();
  if(sc==="done")return{a:"음식이 오고 있어요.",b:"기다리면 배달이 와요. 오면 '리뷰 쓰기'를 눌러 봐요.",t:"none"};
  if(sc==="review")return{a:"별을 눌러 점수를 줘요.",b:"별을 고르고 '리뷰 등록하기'를 눌러요.",t:"none"};
  return{a:"홈에서 음식을 골라요.",b:"아래 '홈'을 눌러요.",t:"tab-home"}}
+const HINT_TOP=["list","cart","order","done","orders","review","fav"];
 function hintLayer(forModal){if(!SET.hint||S.screen==="phone"||S.screen==="splash"||S.screen==="intro"||S.screen==="settings"||S.screen==="missions")return"";
  if(!!S.modal!==!!forModal)return"";
- let h=`<button class="hintfab" style="${forModal?"z-index:30;bottom:auto;top:12px":""}" onclick="moreHint()">💡 힌트${S.hint?" "+Math.min(S.hint,3)+"/3":""}</button>`;
- if(S.hint){const i=hintInfo();h+=`<div class="hintbub" style="${forModal?"z-index:31;bottom:auto;top:70px":""}"><button class="c" onclick="S.hint=0;S.modal?renderModal():render()">✕</button><span class="s">힌트 ${Math.min(S.hint,3)}</span>${S.hint===1?i.a:i.b}${S.hint>=3?"<br><small>👉 반짝이는 곳을 눌러요</small>":""}</div>`}
+ const topBar=!forModal&&HINT_TOP.includes(S.screen);let h=`<button class="hintfab${topBar?" top":""}" style="${forModal?"z-index:30;bottom:auto;top:12px":""}" onclick="moreHint()">💡 힌트${S.hint?" "+Math.min(S.hint,3)+"/3":""}</button>`;
+ if(S.hint){const i=hintInfo();h+=`<div class="hintbub" style="${forModal?"z-index:31;bottom:auto;top:70px":topBar?"bottom:auto;top:64px":""}"><button class="c" onclick="S.hint=0;S.modal?renderModal():render()">✕</button><span class="s">힌트 ${Math.min(S.hint,3)}</span>${S.hint===1?i.a:i.b}${S.hint>=3?"<br><small>👉 반짝이는 곳을 눌러요</small>":""}</div>`}
  return h}
 function moreHint(){S.hint=Math.min(3,S.hint+1);const i=hintInfo();S.modal?renderModal():render();speak(S.hint===1?i.a:i.b)}
 function applyPulse(){document.querySelectorAll(".pulse").forEach(e=>e.classList.remove("pulse"));if(S.hint<3)return;const t=hintInfo().t;if(!t||t==="none")return;
@@ -800,7 +803,9 @@ function applyPulse(){document.querySelectorAll(".pulse").forEach(e=>e.classList
 /* ===== 그리기 ===== */
 function render(){const a=document.getElementById("app");const ae=document.activeElement,keep=ae&&ae.id==="q";
  document.getElementById("phone").className=S.app==="eats"?"eats":"";
+ const pk=S.screen+"|"+S.store+"|"+S.storeTab+"|"+S.cat,os=document.querySelector("#app .scroll"),oy=os?os.scrollTop:0;
  a.innerHTML=W(V[S.screen]()+hintLayer(false));
+ if(render.key===pk){const ns=document.querySelector("#app .scroll");if(ns)ns.scrollTop=oy}render.key=pk;
  if(S.screen==="search"){const q=document.getElementById("q");if(keep||!S.q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}
  if(S.modal)renderModal();else{document.getElementById("modal").innerHTML="";renderModal.last=null;applyPulse()}}
 setInterval(()=>{let ch=0;S.orders.forEach(o=>{if(!o.told&&prog(o)>=1){o.told=1;ch=1;toast("🔔 띵동! 배달이 도착했어요");speak("띵동! 배달이 도착했어요")}});
@@ -809,7 +814,7 @@ setInterval(()=>{let ch=0;S.orders.forEach(o=>{if(!o.told&&prog(o)>=1){o.told=1;
 render();
 </script>
 <script>
-// 혜광전과로 돌아가는 단추 (늘 보여요): ◀ 이전 = 이 앱의 소개 화면, 🏠 홈 = 앱 고르기 화면
+// 초승달 전과로 돌아가는 단추 (늘 보여요): ◀ 이전 = 이 앱의 소개 화면, 🏠 홈 = 앱 고르기 화면
 (function () {
   const go = h => { if (window.parent !== window) { try { window.parent.postMessage({ hub: 'close', h }, '*'); } catch (e) {} return; } location.href = encodeURI('혜광전과초등.html') + h; };
   const box = document.createElement('div'); box.id = 'hub-nav';
@@ -817,7 +822,7 @@ render();
   const mk = (t, h) => { const b = document.createElement('button'); b.textContent = t; b.onclick = () => go(h);
     b.style.cssText = "background:#fff;border:2px solid #4a3428;border-radius:99px;padding:3px 11px;font:15px 'Jua','Malgun Gothic',sans-serif;color:#4a3428;cursor:pointer;box-shadow:0 2px 0 #f6c85f"; return b; };
   box.appendChild(mk('◀ 이전', '#app=delivery')); box.appendChild(mk('🏠 홈', '#apps'));
-  // 혜광전과 초등에서 단원 칸을 눌러 들어오면 그 활동으로 바로 가요
+  // 초승달 전과 초등에서 단원 칸을 눌러 들어오면 그 활동으로 바로 가요
   const H = window.__HUB_START;
   if (H && H.app === 'delivery' && H.d != null) addEventListener('load', () => setTimeout(() => { try { const d = +H.d; openApp(['hg','eats'][d]); } catch (e) {} }, 700), { once: true });
   (document.body ? Promise.resolve() : new Promise(r => document.addEventListener('DOMContentLoaded', r))).then(() => document.body.appendChild(box));
