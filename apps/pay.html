@@ -528,7 +528,7 @@ const OPT = {
 // ===================== 가게 =====================
 // type: food(음식) / ticket(표). s2: 2단계에 나오는 메뉴 4개. up: 결제 전에 권하는 메뉴
 const STORES = [
-  { id: 'hgshop', name: '혜광가게', who: 'wol', c: '#0f766e', cb: '#f0fdfa', type: 'food', ds: '우리 학교 카페 (음료)', hw: true, noWhere: true,
+  { id: 'hgshop', name: '밤섬가게', who: 'wol', c: '#0f766e', cb: '#f0fdfa', type: 'food', ds: '우리 학교 카페 (음료)', hw: true, noWhere: true,
     tabs: [
       { n: '커피', items: [{ id: 'ha', n: '아메리카노', p: 1000, opt: ['temp'] }, { id: 'hl', n: '카페라테', p: 1000, opt: ['temp'] }, { id: 'hv', n: '바닐라라테', p: 1500, opt: ['temp'] }, { id: 'hc', n: '카페모카', p: 1500, opt: ['temp'] }, { id: 'ht', n: '토피넛 라테', p: 1500, opt: ['temp'] }] },
       { n: '논커피', items: [{ id: 'hi', n: '아이스티', p: 500 }, { id: 'hm', n: '망고주스', p: 1000 }, { id: 'hh', n: '홍시주스', p: 1000 }, { id: 'hk', n: '초코라테', p: 1000, opt: ['temp'] }, { id: 'hg', n: '고구마 라테', p: 1500, opt: ['temp'] }] },
@@ -547,7 +547,7 @@ const STORES = [
       { n: '음료', items: [{ id: 'cc', n: '초코라테', p: 3500, opt: ['temp'] }, { id: 'sb', n: '딸기주스', p: 4000 }, { id: 'le', n: '레몬에이드', p: 4000, opt: ['size'] }] },
       { n: '빵', items: [{ id: 'ca', n: '케이크', p: 4500 }, { id: 'cr', n: '크루아상', p: 3000 }, { id: 'ko', n: '쿠키', p: 2000 }] },
     ], s2: ['am', 'sb', 'ca', 'ko'], up: 'ko' },
-  { id: 'bunsik', name: '혜광분식', who: 'wol', c: '#ea580c', cb: '#fff7ed', type: 'food', ds: '떡볶이·라면·김밥',
+  { id: 'bunsik', name: '밤섬분식', who: 'wol', c: '#ea580c', cb: '#fff7ed', type: 'food', ds: '떡볶이·라면·김밥',
     tabs: [
       { n: '분식', items: [{ id: 'tb', n: '떡볶이', p: 4000, opt: ['spicy'] }, { id: 'rm', n: '라면', p: 3500, opt: ['egg'] }, { id: 'om', n: '어묵', p: 2000 }, { id: 'md', n: '만두', p: 3500 }, { id: 'tw', n: '튀김', p: 3000 }, { id: 'jm', n: '주먹밥', p: 2500 }] },
       { n: '음료', items: [{ id: 'sd', n: '사이다', p: 1500 }, { id: 'wt', n: '물', p: 1000 }, { id: 'sh', n: '식혜', p: 2000 }] },
@@ -923,7 +923,7 @@ function renderCardHW() {
     <div style="font-size:28px;color:#1e293b">${ph === 'in' ? '오른쪽 아래 단말기에<br>카드를 꽂아 주세요' : ph === 'wait' ? '결제 중이에요<br><small style="font-size:22px;color:#ef4444">카드를 빼지 마세요</small>' : '결제가 끝났어요<br>카드를 빼 주세요'}</div>
     <div style="font-size:22px;color:#64748b;margin-top:4px">결제할 돈 ${won(cartSum())}</div>${ph === 'wait' ? '<div class="spin" style="margin-top:8px;width:50px;height:50px;border-width:8px"></div>' : ''}</div>
     <div style="position:absolute;left:0;top:330px;width:552px;height:274px">${PANEL_SVG}</div>
-    <div style="position:absolute;left:370px;top:190px;width:130px;height:310px;overflow:hidden;z-index:2"><button id="card" class="sc" onclick="kCardHW()" style="left:8px;top:${ph === 'in' ? 40 : 150}px;width:110px;height:160px;padding:12px 8px;transition:top .9s ease-in-out"><div style="font-size:16px">혜광카드</div><div class="chip"></div></button></div>
+    <div style="position:absolute;left:370px;top:190px;width:130px;height:310px;overflow:hidden;z-index:2"><button id="card" class="sc" onclick="kCardHW()" style="left:8px;top:${ph === 'in' ? 40 : 150}px;width:110px;height:160px;padding:12px 8px;transition:top .9s ease-in-out"><div style="font-size:16px">월궁카드</div><div class="chip"></div></button></div>
     ${READER_SVG}${ph === 'in' ? `<div style="position:absolute;left:296px;top:320px;z-index:4">${A('handR', 64)}</div>` : ''}`;
   if (ph === 'wait') setTimeout(() => { if (!S || S.scr !== 'card') return; sfx('beep'); S.cardPh = 'out'; render(); say('결제가 끝났어요. 카드를 빼 주세요. 카드를 눌러요.'); }, 2200);
 }
@@ -939,7 +939,7 @@ function renderReceipt() {
     ${ph === 'ask' ? `<div style="font-size:28px;color:#1e293b;margin-bottom:12px">결제가 끝났어요!</div><button class="kbtn sc" data-k="rc" onclick="kRc()">${A('receipt', 44)} 영수증 받기</button>`
       : `<div style="font-size:28px;color:#1e293b">왼쪽 아래에서<br>영수증이 나왔어요. 챙겨요!</div>`}</div>
     <div style="position:absolute;left:0;top:330px;width:552px;height:274px">${PANEL_SVG}</div>
-    ${ph === 'take' ? `<div style="position:absolute;left:44px;top:236px;width:180px;height:190px;overflow:hidden;z-index:2"><button id="paper" class="sc" onclick="kPaper()" style="position:absolute;left:20px;top:190px;width:140px;height:180px;background:#fff;border:3px solid #94a3b8;border-radius:4px;font-size:16px;color:#334155;line-height:1.5;transition:top 1.2s ease-out;box-shadow:0 4px 8px rgba(0,0,0,.15)">혜광가게<br>영수증<br>━━━━<br>${won(cartSum())}<br>${A('coupon', 30)} 쿠폰</button></div>
+    ${ph === 'take' ? `<div style="position:absolute;left:44px;top:236px;width:180px;height:190px;overflow:hidden;z-index:2"><button id="paper" class="sc" onclick="kPaper()" style="position:absolute;left:20px;top:190px;width:140px;height:180px;background:#fff;border:3px solid #94a3b8;border-radius:4px;font-size:16px;color:#334155;line-height:1.5;transition:top 1.2s ease-out;box-shadow:0 4px 8px rgba(0,0,0,.15)">밤섬가게<br>영수증<br>━━━━<br>${won(cartSum())}<br>${A('coupon', 30)} 쿠폰</button></div>
        <div style="position:absolute;left:222px;top:290px;z-index:4">${A('handL', 64)}</div>` : ''}`;
   if (ph === 'take') setTimeout(() => { const p = $('paper'); if (p) p.style.top = '10px'; }, 60);
 }
@@ -954,7 +954,7 @@ function renderCard() {
     <div style="font-size:24px;color:#64748b;margin-top:6px">결제할 돈 ${won(total)}</div>
     ${ph === 'wait' ? '<div class="spin" style="margin-top:20px"></div>' : '<div style="margin-top:6px">' + A(ph === 'in' ? 'arrowU' : 'arrowD', 60) + '</div>'}</div>
     <div style="position:absolute;left:186px;top:340px;width:180px;height:24px;background:#1e293b;border-radius:12px;box-shadow:inset 0 8px 0 #0f172a"></div>
-    <div style="position:absolute;left:196px;top:364px;width:160px;height:250px;overflow:hidden"><button id="card" class="sc" onclick="kCard()" style="left:16px;top:24px;width:128px;height:200px;padding:16px 8px;transform:translateY(${ph === 'in' ? 0 : -100}px)"><div class="chip"></div><div style="font-size:17px">혜광카드</div></button></div>`;
+    <div style="position:absolute;left:196px;top:364px;width:160px;height:250px;overflow:hidden"><button id="card" class="sc" onclick="kCard()" style="left:16px;top:24px;width:128px;height:200px;padding:16px 8px;transform:translateY(${ph === 'in' ? 0 : -100}px)"><div class="chip"></div><div style="font-size:17px">월궁카드</div></button></div>`;
   if (ph === 'wait') setTimeout(() => { if (!S || S.scr !== 'card') return; sfx('beep'); S.cardPh = 'out'; render(); say('결제가 끝났어요. 카드를 빼 주세요. 카드를 눌러요.'); }, 2200);
 }
 function kCard() {

@@ -833,7 +833,7 @@ const LEVELS = [
   { t:'백 원으로 만들기', e:'🧮', run: () => L_money({ dens:[100], modes:['make'], rounds:4, max:9 }) },
   { t:'오백 원과 백 원', e:'💰', run: () => L_money({ dens:[500, 100], modes:['count', 'make'], rounds:4 }) },
   { t:'동전 골라 사기', e:'🍬', run: L_pick },
-  { t:'혜광 가게', e:'🏪', run: L_shop }
+  { t:'밤섬 가게', e:'🏪', run: L_shop }
 ];
 // 그림 아이콘(Gemini): 데이터의 이모지는 그대로 두고, 화면에 그릴 때만 그림으로 바꿔요
 const GI_LV = ['money_002', 'money_003', 'money_004', 'money_005', 'money_006', 'money_007', 'money_008', 'money_009', 'money_010', 'money_011', 'money_012', 'money_013', 'money_014', 'money_015'];
@@ -1211,7 +1211,7 @@ function L_money(cfg) {
   run();
 }
 
-// ===================== 13·14단계: 몇백 원 물건 · 혜광 가게 =====================
+// ===================== 13·14단계: 몇백 원 물건 · 밤섬 가게 =====================
 const GOODS = [['과자', '🍪'], ['우유', '🥛'], ['빵', '🍞'], ['사과', '🍎'], ['바나나', '🍌'], ['귤', '🍊'], ['주스', '🧃'], ['연필', '✏️'], ['공책', '📒'], ['사탕', '🍬'], ['초콜릿', '🍫'], ['요구르트', '🥤'], ['도넛', '🍩'], ['풍선', '🎈']];
 // 물건마다 있을 법한 값(몇백 원 안에서): [가장 싼 값, 가장 비싼 값] (백 원 단위)
 const PRICE = { '과자':[5,9], '우유':[5,9], '빵':[5,9], '사과':[5,9], '바나나':[3,6], '귤':[2,5], '주스':[5,9], '연필':[2,5], '공책':[5,9], '사탕':[1,3], '초콜릿':[5,9], '요구르트':[2,4], '도넛':[5,9], '풍선':[1,3] };
@@ -1222,7 +1222,7 @@ function shopBg() {
   const deco = shuffle(GOODS).slice(0, 14).map((g, i) => `<span class="deco" style="position:absolute;left:${60 + (i % 7) * 170}px;top:${i < 7 ? 160 : 232}px;font-size:46px;opacity:.75;line-height:1">${gi(GI_GOODS[g[0]], '66px', g[1])}</span>`).join('');
   $('bg').innerHTML = `<div style="position:absolute;inset:92px 0 0 0;background:linear-gradient(#fef3c7,#fde68a)"></div>
     <div style="position:absolute;left:0;right:0;top:92px;height:46px;background:repeating-linear-gradient(90deg,#ef4444 0 60px,#fff 60px 120px);box-shadow:0 6px 8px #0002"></div>
-    <div style="position:absolute;left:470px;top:98px;width:340px;height:52px;background:#7c2d12;color:#fde68a;border-radius:14px;border:4px solid #fde68a;font-size:34px;text-align:center;line-height:44px">${gi('money_015', '1.3em', '🏪')} 혜광 가게</div>
+    <div style="position:absolute;left:470px;top:98px;width:340px;height:52px;background:#7c2d12;color:#fde68a;border-radius:14px;border:4px solid #fde68a;font-size:34px;text-align:center;line-height:44px">${gi('money_015', '1.3em', '🏪')} 밤섬 가게</div>
     ${shelf(214)}${shelf(286)}<div style="opacity:.9">${deco}</div>
     <div style="position:absolute;left:0;right:0;top:300px;height:200px;background:linear-gradient(#c58b55,#a86f3c);border-top:10px solid #7c4a1e"></div>
     <div style="position:absolute;left:0;right:0;top:500px;bottom:0;background:#e7d3b3"></div>`;
@@ -1278,7 +1278,7 @@ function L_pick() {
   run();
 }
 
-// ----- 14단계: 혜광 가게 (오백 원·백 원으로 몇백 원 물건 사기) -----
+// ----- 14단계: 밤섬 가게 (오백 원·백 원으로 몇백 원 물건 사기) -----
 function L_shop() {
   ROUNDS = 3;
   const run = () => {

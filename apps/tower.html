@@ -126,7 +126,7 @@
   <!-- 통장 쓰기 확인 -->
   <div id="bankq" class="scr hidden" style="background:rgba(30,10,60,.55);z-index:30">
     <div style="position:absolute;left:340px;top:170px;width:600px;background:#fff;border-radius:30px;border:6px solid #facc15;padding:26px;text-align:center">
-      <div style="font-size:70px">💳</div><div style="font-size:28px;color:#4c1d95;line-height:1.4;word-break:keep-all">혜광통장 1개를 써서<br>이 단계를 바로 통과할까요?</div>
+      <div style="font-size:70px">💳</div><div style="font-size:28px;color:#4c1d95;line-height:1.4;word-break:keep-all">월궁통장 1개를 써서<br>이 단계를 바로 통과할까요?</div>
       <div style="font-size:20px;color:#64748b;margin-top:8px">지금 가진 통장: <b id="bankq-n">0</b>개</div>
       <div style="display:flex;justify-content:center;gap:16px;margin-top:18px"><button class="bigbtn" onclick="bankYes()" style="background:#facc15;color:#4c1d95;box-shadow:0 6px 0 #a16207">네, 쓸래요</button><button class="btn2" onclick="bankNo()">아껴 둘래요</button></div>
     </div>
@@ -1986,7 +1986,7 @@ const RID = [
   ['아홉 명의 자식을 세 글자로 하면?', ['아이구', '😩'], ['구남매', '👨‍👩‍👧'], ['대가족', '🏠'], '아이가 아홉(9) = 아이구예요.'],
   ['세상에서 가장 쉬운 숫자는?', ['190000', '🔢'], ['1', '1️⃣'], ['100', '💯'], '190000은 "십구만" = 쉽구만!'],
   ['세상에서 가장 빠른 새는?', ['눈 깜짝할 새', '😉'], ['독수리', '🦅'], ['제비', '🐦'], '눈 깜짝할 "새"가 가장 빨라요.'],
-  ['세상에서 가장 지루한 중학교는?', ['로딩중', '⏳'], ['혜광중', '🏫'], ['방학중', '🏖️'], '컴퓨터가 "로딩중"일 때 가장 지루하죠.'],
+  ['세상에서 가장 지루한 중학교는?', ['로딩중', '⏳'], ['밤섬중', '🏫'], ['방학중', '🏖️'], '컴퓨터가 "로딩중"일 때 가장 지루하죠.'],
   ['마실 수 없는 물은?', ['괴물', '👹'], ['생수', '💧'], ['보리차', '🍵'], '물은 물인데 괴"물"이에요.'],
   ['세상에서 가장 가난한 왕은?', ['최저임금', '💸'], ['사자왕', '🦁'], ['세종대왕', '📜'], '임금은 왕! 가장 낮은 임금 = 최저임금이에요.'],
   ['세상에서 가장 빠른 개는?', ['번개', '⚡'], ['치타', '🐆'], ['그레이하운드', '🐕'], '번쩍! 번개가 가장 빠른 "개"예요.'],
@@ -2161,7 +2161,7 @@ const fixPour = s => { if (s && s.type === 'squeeze' && s.mode === 'hold' && s.g
 FLOORS.forEach(F => F.steps.forEach(fixPour));
 // ===== 명예의 전당 =====
 // 꼭대기에 오른 학생 이름을 아래 따옴표 안에 적고 새 버전으로 배포해요.
-// 예) const HALL = ['김혜광', '이진주'];
+// 예) const HALL = ['김하늘', '이진주'];
 const HALL = [];
 
 // ===================== 새 구성: 10구역 99층 =====================
@@ -2462,7 +2462,7 @@ function goHome() {
   $('floors').innerHTML = FLOORS.slice(BAND * 10, BAND * 10 + 10).map((f, j) => { const i = BAND * 10 + j, c = j % 4, r = Math.floor(j / 4), st = STARS[f.id] || 0, op = isOpen(i), K = KIND(f);
     return `<button class="fl ${st ? 'done' : ''} ${i === nextI ? 'next' : ''}" style="left:${24 + c * 310}px;top:${160 + r * 168}px;${op ? '' : 'filter:grayscale(1);opacity:.55'}" onclick="openFloor(${i})"><div class="ic" style="${f.surprise ? 'background:#fef9c3' : f.boss ? 'background:#fde68a' : ''}"><svg viewBox="-110 -110 220 220">${f.icon()}</svg></div><div class="tx"><div class="fn">${i + 1}층 ${K[0]} ${K[1]}</div><div class="nm">${op ? f.name : '🔒 ' + f.name}</div><div class="st">${f.cat ? `<span style="font-size:14px;color:#64748b">${f.cat}</span> ` : ''}${st ? '★'.repeat(st) + '☆'.repeat(3 - st) : '<span style="color:#cbd5e1">☆☆☆</span>'}</div></div></button>`; }).join('');
   const n = Object.keys(STARS).length; $('tot').innerHTML = `${n} / ${FLOORS.length}층 탈출 ${n === FLOORS.length ? '🎉 꼭대기 정복!' : ''}`;
-  $('bank-home').innerHTML = `💳 혜광통장 <b>${BANK}</b>개`;
+  $('bank-home').innerHTML = `💳 월궁통장 <b>${BANK}</b>개`;
 }
 function setBand(b) { BAND = b; try { sessionStorage.setItem('tower-band', b); } catch (e) {} sfx('tap'); goHome(); }
 let RESET_ARMED = 0;
@@ -2472,7 +2472,7 @@ function openFloor(i) {
   stopVoice(); BUSY = false; CUR = i; const F = FLOORS[i], K = KIND(F);
   ['home', 'play', 'clear'].forEach(id => $(id).classList.add('hidden')); $('intro').classList.remove('hidden');
   $('in-zone').innerText = `${i + 1}층 · ${F.zlab || K[0] + ' ' + K[1]}${F.cat ? ' · ' + F.cat : ''}`;
-  $('in-title').innerText = F.name; $('in-text').innerText = F.intro; $('in-safe').innerHTML = F.surprise ? '🎁 다 맞히면 <b>혜광통장</b>을 받아요!' : F.boss ? '👑 마지막 층이에요. 💡 도움은 말로만 나오고, 혜광통장을 쓸 수 없어요.' : `⚠️ ${F.safe}`;
+  $('in-title').innerText = F.name; $('in-text').innerText = F.intro; $('in-safe').innerHTML = F.surprise ? '🎁 다 맞히면 <b>월궁통장</b>을 받아요!' : F.boss ? '👑 마지막 층이에요. 💡 도움은 말로만 나오고, 월궁통장을 쓸 수 없어요.' : `⚠️ ${F.safe}`;
   $('in-svg').innerHTML = F.surprise ? `<rect width="560" height="470" fill="#fef9c3"/>${em(280, 200, 200, '🎲')}${em(120, 90, 70, '⚡')}${em(450, 380, 70, '❓')}` : `<rect width="560" height="470" fill="#f5f3ff"/><rect y="360" width="560" height="110" fill="#ddd6fe"/><rect x="380" y="90" width="140" height="270" rx="10" fill="#7c2d12"/><rect x="392" y="102" width="116" height="258" rx="6" fill="#a16207"/><circle cx="490" cy="240" r="9" fill="#fde047"/>${em(450, 200, 46, '🔒')}<g transform="translate(200,240) scale(1.25)">${F.icon()}</g>`;
   playLines([F.intro]);
 }
@@ -2504,14 +2504,14 @@ function hint(lv, msg) {
   $('fb').innerHTML = `🙌 화살표와 반짝이는 곳을 따라 해요. ${S.h}`; say('🙌 화살표와 반짝이는 곳을 따라 해요.', 'ari', ['화살표와 반짝이는 곳을 따라 해요']); redraw();
 }
 function hintMore() { if (DONE || $('play').classList.contains('hidden')) return; MISS++; ERR = Math.max(ERR, 1); hint(Math.max(2, G + 1)); }
-// 혜광통장: 단계 하나를 바로 통과
+// 월궁통장: 단계 하나를 바로 통과
 function useBank() {
   const F = FLOORS[CUR]; if (DONE) return;
-  if (F.boss || F.surprise) { say(F.boss ? '99층에서는 혜광통장을 쓸 수 없어요. 내 힘으로 도전해요!' : '돌발 스테이지에서는 혜광통장을 쓸 수 없어요.', 'hami'); return; }
-  if (BANK <= 0) { say('혜광통장이 없어요. 10층마다 나오는 돌발 스테이지를 풀면 받을 수 있어요.', 'hami'); return; }
+  if (F.boss || F.surprise) { say(F.boss ? '99층에서는 월궁통장을 쓸 수 없어요. 내 힘으로 도전해요!' : '돌발 스테이지에서는 월궁통장을 쓸 수 없어요.', 'hami'); return; }
+  if (BANK <= 0) { say('월궁통장이 없어요. 10층마다 나오는 돌발 스테이지를 풀면 받을 수 있어요.', 'hami'); return; }
   $('bankq').classList.remove('hidden'); $('bankq-n').innerText = BANK;
 }
-function bankYes() { $('bankq').classList.add('hidden'); if (DONE || BANK <= 0) return; BANK--; save(); if (S.give) {} pass('💳 혜광통장을 써서 이 단계를 통과했어요.'); drawSteps(); }
+function bankYes() { $('bankq').classList.add('hidden'); if (DONE || BANK <= 0) return; BANK--; save(); if (S.give) {} pass('💳 월궁통장을 써서 이 단계를 통과했어요.'); drawSteps(); }
 function bankNo() { $('bankq').classList.add('hidden'); }
 function stepDone(msg) {
   const m = msg || S.ok; drawSteps();
@@ -2525,8 +2525,8 @@ function floorClear() {
   const F = FLOORS[CUR], n = F.starN || F.steps.length, st = MISS <= Math.ceil(n / 2) ? 3 : MISS <= n * 2 ? 2 : 1;
   STARS[F.id] = Math.max(STARS[F.id] || 0, st);
   let bankMsg = '';
-  if (F.surprise && !BANKGOT[F.id]) { BANKGOT[F.id] = 1; BANK++; bankMsg = `<div style="margin-top:10px;padding:10px 14px;background:#fef9c3;border:3px solid #facc15;border-radius:16px;font-size:21px;text-align:left;line-height:1.45">💳 <b>혜광통장 1개를 받았어요!</b> (지금 ${BANK}개)<br>혜광통장은 <b>비장의 무기</b>예요. 너무 어려운 단계에서 오른쪽 위 <b>💳 단추</b>를 누르면 통장 1개를 쓰고 그 단계를 바로 통과해요.<br>통장은 <b>여러 개 모아 둘 수 있어요(스택)</b>. 아껴 두었다가 꼭 필요할 때 써요. 단, 돌발 스테이지와 99층에서는 쓸 수 없어요.</div>`; }
-  else if (F.surprise) bankMsg = `<div style="margin-top:8px;font-size:19px;color:#64748b">이 돌발 스테이지의 혜광통장은 이미 받았어요. (지금 ${BANK}개)</div>`;
+  if (F.surprise && !BANKGOT[F.id]) { BANKGOT[F.id] = 1; BANK++; bankMsg = `<div style="margin-top:10px;padding:10px 14px;background:#fef9c3;border:3px solid #facc15;border-radius:16px;font-size:21px;text-align:left;line-height:1.45">💳 <b>월궁통장 1개를 받았어요!</b> (지금 ${BANK}개)<br>월궁통장은 <b>비장의 무기</b>예요. 너무 어려운 단계에서 오른쪽 위 <b>💳 단추</b>를 누르면 통장 1개를 쓰고 그 단계를 바로 통과해요.<br>통장은 <b>여러 개 모아 둘 수 있어요(스택)</b>. 아껴 두었다가 꼭 필요할 때 써요. 단, 돌발 스테이지와 99층에서는 쓸 수 없어요.</div>`; }
+  else if (F.surprise) bankMsg = `<div style="margin-top:8px;font-size:19px;color:#64748b">이 돌발 스테이지의 월궁통장은 이미 받았어요. (지금 ${BANK}개)</div>`;
   save(); sfx('clear');
   $('cl-door').innerHTML = `<rect width="400" height="200" fill="#fef9c3"/><rect x="150" y="20" width="100" height="180" fill="#fde047"/><path d="M150,20 L110,36 L110,200 L150,200 Z" fill="#a16207"/>${em(200, 110, 60, F.surprise ? '💳' : '✨')}<g transform="translate(70,120) scale(.5)">${F.icon()}</g>${em(330, 120, 60, '🗝️')}`;
   $('cl-stars').innerText = '★'.repeat(st) + '☆'.repeat(3 - st);
