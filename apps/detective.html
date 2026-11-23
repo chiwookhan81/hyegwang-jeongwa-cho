@@ -621,7 +621,7 @@ document.addEventListener('keydown',ev=>{
 });
 </script>
 <script>
-// 혜광전과로 돌아가는 단추 (늘 보여요): ◀ 이전 = 이 앱의 소개 화면, 🏠 홈 = 앱 고르기 화면
+// 초승달 전과로 돌아가는 단추 (늘 보여요): ◀ 이전 = 이 앱의 소개 화면, 🏠 홈 = 앱 고르기 화면
 (function () {
   const go = h => { if (window.parent !== window) { try { window.parent.postMessage({ hub: 'close', h }, '*'); } catch (e) {} return; } location.href = encodeURI('혜광전과초등.html') + h; };
   const box = document.createElement('div'); box.id = 'hub-nav';
@@ -629,7 +629,7 @@ document.addEventListener('keydown',ev=>{
   const mk = (t, h) => { const b = document.createElement('button'); b.textContent = t; b.onclick = () => go(h);
     b.style.cssText = "background:#fff;border:2px solid #4a3428;border-radius:99px;padding:3px 11px;font:15px 'Jua','Malgun Gothic',sans-serif;color:#4a3428;cursor:pointer;box-shadow:0 2px 0 #f6c85f"; return b; };
   box.appendChild(mk('◀ 이전', '#app=detective')); box.appendChild(mk('🏠 홈', '#apps'));
-  // 혜광전과 초등에서 단원 칸을 눌러 들어오면 그 활동으로 바로 가요
+  // 초승달 전과 초등에서 단원 칸을 눌러 들어오면 그 활동으로 바로 가요
   const H = window.__HUB_START;
   if (H && H.app === 'detective' && H.d != null) addEventListener('load', () => setTimeout(() => { try { const d = +H.d; const b = document.querySelector('.stage[data-st="' + d + '"]'); if (b) b.click(); } catch (e) {} }, 700), { once: true });
   (document.body ? Promise.resolve() : new Promise(r => document.addEventListener('DOMContentLoaded', r))).then(() => document.body.appendChild(box));
