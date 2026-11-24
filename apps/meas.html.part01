@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<script>/* 칠판 끌기 고침 (2026-11-24): 누른 자리가 다시 그려져 사라져도 끌기가 끊기지 않게 이어 줘요 */
+(function(){if(window.__dragFix)return;window.__dragFix=1;var C=null;
+function fw(e){var t=e.currentTarget;if(t.isConnected||!C||C.n!==t)return;var h=null;for(var i=0;i<C.a.length;i++)if(C.a[i].isConnected){h=C.a[i];break}h=h||document.body;try{h.dispatchEvent(new PointerEvent(e.type,e))}catch(x){}if(e.type!=='pointermove')off()}
+function off(){if(!C)return;['pointermove','pointerup','pointercancel'].forEach(function(k){C.n.removeEventListener(k,fw)});C=null}
+document.addEventListener('pointerdown',function(e){if(e.pointerType==='mouse')return;off();var n=e.target;if(!n||!n.addEventListener)return;var a=[],p=n.parentNode;while(p&&p.nodeType===1){a.push(p);p=p.parentNode}C={n:n,a:a};['pointermove','pointerup','pointercancel'].forEach(function(k){n.addEventListener(k,fw)})},true);
+document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},true);
+})();</script>
+
 <meta charset="UTF-8">
 <script>
 // 초승달 전과 소리 맞춤: 시작 화면에서 정한 소리 크기를 이 앱에도 써요.
