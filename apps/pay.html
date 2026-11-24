@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<meta charset="UTF-8">
 <script>/* 칠판 끌기 고침 (2026-11-24): 누른 자리가 다시 그려져 사라져도 끌기가 끊기지 않게 이어 줘요 */
 (function(){if(window.__dragFix)return;window.__dragFix=1;var C=null;
 function fw(e){var t=e.currentTarget;if(t.isConnected||!C||C.n!==t)return;var h=null;for(var i=0;i<C.a.length;i++)if(C.a[i].isConnected){h=C.a[i];break}h=h||document.body;try{h.dispatchEvent(new PointerEvent(e.type,e))}catch(x){}if(e.type!=='pointermove')off()}
@@ -9,7 +10,6 @@ document.addEventListener('pointerdown',function(e){if(e.pointerType==='mouse')r
 document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},true);
 })();</script>
 
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>월궁페이</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
