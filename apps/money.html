@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<head>
 <script>/* 칠판 끌기 고침 (2026-11-24): 누른 자리가 다시 그려져 사라져도 끌기가 끊기지 않게 이어 줘요 */
 (function(){if(window.__dragFix)return;window.__dragFix=1;var C=null;
 function fw(e){var t=e.currentTarget;if(t.isConnected||!C||C.n!==t)return;var h=null;for(var i=0;i<C.a.length;i++)if(C.a[i].isConnected){h=C.a[i];break}h=h||document.body;try{h.dispatchEvent(new PointerEvent(e.type,e))}catch(x){}if(e.type!=='pointermove')off()}
@@ -36,9 +37,8 @@ document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},t
   try { const pl = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { try { if (!this._hubv) { this._hubv = 1; this.volume = Math.min(1, this.volume * vol() / 0.7 * NORM); } } catch (e) {} return pl.apply(this, arguments); }; } catch (e) {}
 })();
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>월궁준비제도</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap" media="print" onload="this.media='all'">
 <style>
   :root { --font: 'Jua', 'Malgun Gothic', sans-serif; }
   * { box-sizing: border-box; }
@@ -820,9 +820,14 @@ function deskSlots(n, x0 = 120, x1 = 1200, y0 = 520, y1 = 680) {
   for (let i = 0; i < n; i++) { const r = i % 2, c = Math.floor(i / 2); out.push([x0 + (c + .5) * (x1 - x0) / cols + rnd(-18, 18), r ? y1 - 20 + rnd(-8, 8) : y0 + 10 + rnd(-8, 8)]); }
   return shuffle(out);
 }
-function putOnDesk(list) {
-  const slots = deskSlots(list.length);
-  list.forEach((el, i) => { el.style.transition = 'none'; area.appendChild(el); setC(el, slots[i][0], slots[i][1], rnd(-14, 14)); el._home = null; });
+function putOnDesk(list) {   // 1.1.0: 책상을 칸으로 나눠 돈이 서로 겹치지 않게 놓아요 (작은 화면에서도)
+  const n = list.length, cols = Math.max(1, Math.ceil(n / 2)), x0 = 130, x1 = 1170, cw = (x1 - x0) / cols, ys = [518, 640];
+  const cells = []; for (let c = 0; c < cols; c++) for (let r = 0; r < 2; r++) cells.push([c, r]);
+  const used = new Set(), place = [], key = cl => cl[0] + ',' + cl[1];
+  const bills = list.filter(e => !isCoin(+e.dataset.d)), coins = list.filter(e => isCoin(+e.dataset.d)), order = shuffle([...Array(cols).keys()]);
+  bills.forEach((el, i) => { let cl = i < cols ? [order[i], rnd(0, 1)] : null; if (!cl || used.has(key(cl))) cl = shuffle(cells.filter(x => !used.has(key(x))))[0]; used.add(key(cl)); place.push([el, cl]); });
+  coins.forEach(el => { const cl = shuffle(cells.filter(x => !used.has(key(x))))[0]; used.add(key(cl)); place.push([el, cl]); });
+  place.forEach(([el, [c, r]]) => { el.style.transition = 'none'; area.appendChild(el); const [w] = msize(+el.dataset.d), j = Math.max(0, Math.min(14, (cw - w - 40) / 2)); setC(el, x0 + (c + .5) * cw + rnd(-j, j), ys[r] + rnd(-6, 6), rnd(-8, 8)); el._home = null; });
 }
 function label(html, x, y, w, style = '') { const d = document.createElement('div'); d.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:${w}px;text-align:center;${style}`; d.innerHTML = html; area.appendChild(d); return d; }
 
