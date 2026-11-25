@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<head>
 <script>/* 칠판 끌기 고침 (2026-11-24): 누른 자리가 다시 그려져 사라져도 끌기가 끊기지 않게 이어 줘요 */
 (function(){if(window.__dragFix)return;window.__dragFix=1;var C=null;
 function fw(e){var t=e.currentTarget;if(t.isConnected||!C||C.n!==t)return;var h=null;for(var i=0;i<C.a.length;i++)if(C.a[i].isConnected){h=C.a[i];break}h=h||document.body;try{h.dispatchEvent(new PointerEvent(e.type,e))}catch(x){}if(e.type!=='pointermove')off()}
@@ -10,9 +11,8 @@ document.addEventListener('pointerdown',function(e){if(e.pointerType==='mouse')r
 document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},true);
 })();</script>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>월궁탑</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap" media="print" onload="this.media='all'">
 <style>
   img.emi { height: 1.18em; width: auto; vertical-align: -.22em; display: inline-block; pointer-events: none; }
   :root { --font: 'Jua', 'Malgun Gothic', sans-serif; --emo: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif; }
@@ -811,13 +811,19 @@ P.rub = {
     o += pill(430, 30, `${s.label || '칠한 곳'} ${Math.round(cov * 100)}%`, '#6d28d9', 18);
     if (s.dir && G >= 3) o += em(x + w / 2, y - 40, 44, s.dir === 'h' ? '↔️' : '↕️');
     if (G >= 4 && !DONE) o += arrow(x + 20, y + h + 40, x + w - 20, y + h + 40, '#16a34a');
-    if (V.last && !s.noTool) o += `<g style="pointer-events:none">${tool(s.tool || 'glue', V.last[0], V.last[1] - (s.tool === 'sandpaper' ? 0 : 50), s.tool === 'sandpaper' ? .4 : .5, s.tool === 'sandpaper' ? 0 : 20, { open: 1 })}</g>`;
+    { const tp = V.last || (!DONE && !s.noTool ? rubRest(s) : null);   // 도구는 처음부터 칠할 곳 옆에 놓여 있어요 (1.1.0)
+      if (tp && !s.noTool) { const gp = rubGrabPt(s, tp); if (!V.last) o += `<circle cx="${gp[0]}" cy="${gp[1]}" r="58" fill="#fde68a" opacity="${.35 + .25 * Math.sin(Date.now() / 300)}"/>` + pill(gp[0], gp[1] + 78, '잡고 끌어요', '#b45309', 16);
+        o += `<g style="pointer-events:none">${tool(s.tool || 'glue', tp[0], tp[1] - (s.tool === 'sandpaper' ? 0 : 50), s.tool === 'sandpaper' ? .4 : .5, s.tool === 'sandpaper' ? 0 : 20, { open: 1 })}</g>`; } }
     if (DONE && s.done) o += s.done(V);
     return o;
   },
-  down: p => { V.drag = true; V.last = p; V.dx = 0; V.dy = 0; P.rub.paint(p); redraw(); },
+  down: p => {
+    // 도구 그림을 눌러 잡으면, 도구 끝(풀 끝·손끝)이 칠하는 자리가 돼요. 그림 밖을 눌러도 예전처럼 칠해져요.
+    const tp = V.last || rubRest(S);
+    if (!S.noTool && tp && dist(p, rubGrabPt(S, tp)) < 80) { V.drag = true; V.grab = true; V.ent = false; V.off = [tp[0] - p[0], tp[1] - p[1]]; V.last = tp; V.dx = 0; V.dy = 0; redraw(); return; }
+    V.grab = false; V.off = null; V.drag = true; V.last = p; V.dx = 0; V.dy = 0; P.rub.paint(p); redraw(); },
   move: p => {
-    if (!V.drag) return; V.dx += Math.abs(p[0] - V.last[0]); V.dy += Math.abs(p[1] - V.last[1]);
+    if (!V.drag) return; if (V.off) p = [p[0] + V.off[0], p[1] + V.off[1]]; V.dx += Math.abs(p[0] - V.last[0]); V.dy += Math.abs(p[1] - V.last[1]);
     if (S.dir && V.dx + V.dy > 120) { const bad = S.dir === 'h' ? V.dy > V.dx * 1.4 : V.dx > V.dy * 1.4; if (bad) { V.drag = false; V.dx = V.dy = 0; return fail(S.dirMsg || (S.dir === 'h' ? '나뭇결 방향(옆으로)으로 문질러요.' : '위아래로 문질러요.'), true); } V.dx = V.dy = 0; }
     const steps = Math.ceil(dist(p, V.last) / 8); for (let k = 1; k <= steps; k++) P.rub.paint([V.last[0] + (p[0] - V.last[0]) * k / steps, V.last[1] + (p[1] - V.last[1]) * k / steps]);
     V.last = p; if (S.tool === 'sandpaper' && Math.random() < .2) sfx('buzz');
@@ -826,9 +832,15 @@ P.rub = {
   },
   up: () => { V.drag = false; },
   paint: p => { const [x, y, w, h] = S.region, n = S.grid || [12, 5], i = Math.floor((p[0] - x) / (w / n[0])), j = Math.floor((p[1] - y) / (h / n[1])), r = S.brush || 0;
+    if (V.grab && !V.ent) { if (i < 0 || j < 0 || i >= n[0] || j >= n[1]) return; V.ent = true; }   // 잡은 도구를 칠할 곳으로 옮기는 동안은 '밖에 묻음'으로 세지 않아요
     if (i < -1 || j < -1 || i > n[0] || j > n[1]) { V.out++; return; } if (i < 0 || j < 0 || i >= n[0] || j >= n[1]) { V.out += .5; return; }
     for (let a = -r; a <= r; a++) for (let b = -r; b <= r; b++) { const ii = i + a, jj = j + b; if (ii >= 0 && jj >= 0 && ii < n[0] && jj < n[1]) V.cells[ii + ',' + jj] = 1; } }
 };
+// 문지르기 도구가 처음 놓이는 자리(도구 끝 기준)와 잡는 자리
+function rubRest(s) { const [x, y, w, h] = s.region, sp = s.tool === 'sandpaper'; let tx, ty = y + h / 2 + (sp ? 0 : 40);
+  if (860 - (x + w) >= 120) tx = x + w + 70; else if (x >= 120) tx = x - 70; else { tx = Math.min(800, x + w - 40); ty = Math.min(470, y + h + (sp ? 60 : 110)); }
+  return [tx, Math.max(sp ? 60 : 110, Math.min(sp ? 470 : 500, ty))]; }
+function rubGrabPt(s, tp) { return s.tool === 'sandpaper' ? tp : [tp[0] + 10, tp[1] - 40]; }
 // 12. 각도 맞추기 (구부리기)
 P.angle = {
   init: s => ({ a: 0, drag: false }),
@@ -2527,6 +2539,8 @@ function stepDone(msg) {
   $('fb').innerHTML = `<b style="color:#16a34a">✅ 잘했어요!</b> ${m}`;
   $('nextb').classList.remove('hidden'); $('nextb').innerText = SI < FLOORS[CUR].steps.length - 1 ? '다음 ▶' : '🚪 문 열기';
   say(`잘했어요! ${m}`, pick(['wol', 'hami']), ['잘했어요', m]);
+  // 층의 마지막 단계(문 열기)가 아니면, 칭찬을 듣고 저절로 다음 단계로 넘어가요 (1.1.0)
+  if (SI < FLOORS[CUR].steps.length - 1) { const c0 = CUR, s0 = SI, d = Math.min(4500, 1600 + String(m).length * 80); setTimeout(() => { if (CUR === c0 && SI === s0 && DONE && !$('play').classList.contains('hidden')) nextStep(); }, d); }
 }
 function nextStep() { const F = FLOORS[CUR]; if (SI < F.steps.length - 1) { SI++; showStep(); } else floorClear(); }
 function floorClear() {
