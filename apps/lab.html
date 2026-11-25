@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<head>
 <script>/* 칠판 끌기 고침 (2026-11-24): 누른 자리가 다시 그려져 사라져도 끌기가 끊기지 않게 이어 줘요 */
 (function(){if(window.__dragFix)return;window.__dragFix=1;var C=null;
 function fw(e){var t=e.currentTarget;if(t.isConnected||!C||C.n!==t)return;var h=null;for(var i=0;i<C.a.length;i++)if(C.a[i].isConnected){h=C.a[i];break}h=h||document.body;try{h.dispatchEvent(new PointerEvent(e.type,e))}catch(x){}if(e.type!=='pointermove')off()}
@@ -36,9 +37,8 @@ document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},t
   try { const pl = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { try { if (!this._hubv) { this._hubv = 1; this.volume = Math.min(1, this.volume * vol() / 0.7 * NORM); } } catch (e) {} return pl.apply(this, arguments); }; } catch (e) {}
 })();
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>월아산 실험실</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap" media="print" onload="this.media='all'">
 <style>
   :root { --font: 'Jua', 'Malgun Gothic', sans-serif; }
   * { box-sizing: border-box; }
@@ -685,7 +685,7 @@ const DRAW = {
     s += `<rect x="${tx}" y="90" width="26" height="240" rx="13" fill="#fff" stroke="#64748b" stroke-width="3"/><rect x="${tx + 7}" y="${320 - th}" width="12" height="${th}" rx="6" fill="#ef4444"/><circle cx="${tx + 13}" cy="332" r="20" fill="#ef4444" stroke="#64748b" stroke-width="3"/>`;
     s += `<text x="${tx + 40}" y="${326 - th}" font-size="24" fill="#b91c1c">${vlab(0, st[0]).replace(' ', '<tspan x="' + (tx + 40) + '" dy="28">') + (vlab(0, st[0]).includes(' ') ? '</tspan>' : '')}</text>`;
     // 초시계
-    const el = on ? Math.round((r || 0) * pp) : 0, ang = el / 60 * 360;
+    const el = on ? Math.floor((r || 0) * pp) : 0, ang = (on ? (r || 0) * pp : 0) / 60 * 360;   // 바늘은 끊김 없이 돌아요 (1.1.0)
     s += `<circle cx="110" cy="190" r="72" fill="#fff" stroke="#334155" stroke-width="6"/><rect x="100" y="104" width="20" height="16" fill="#334155"/>`;
     for (let i = 0; i < 12; i++) { const a = i * 30 * Math.PI / 180; s += `<line x1="${110 + Math.sin(a) * 60}" y1="${190 - Math.cos(a) * 60}" x2="${110 + Math.sin(a) * 68}" y2="${190 - Math.cos(a) * 68}" stroke="#334155" stroke-width="3"/>`; }
     s += `<line x1="110" y1="190" x2="${110 + Math.sin(ang * Math.PI / 180) * 55}" y2="${190 - Math.cos(ang * Math.PI / 180) * 55}" stroke="#dc2626" stroke-width="5" stroke-linecap="round"/>${svgChip('lab_035', 110, 300, 26, '시계', '#334155', '⏱️')}`;
@@ -923,8 +923,12 @@ $('scene').addEventListener('click', async () => {
   const st = CUR.st.slice(); const me = await runExp(st, X().id === 'wave' ? 1600 : 1300, true); if (CUR === me) setState(st);
 });
 // 실험 한 번: 장면을 움직이고 결과를 돌려줘요. free = 직접 눌러 보기(기록하지 않아요)
+// 시계를 보는 실험(각설탕 녹이기·물 섞기)은 시간이 흐르는 게 느껴지게 천천히 움직여요 (1.1.0)
+// CLOCK_RATE: 시계 1초가 실제로 걸리는 시간(초). 0.5면 시계가 실제보다 두 배 빠르게 가요.
+const CLOCK_RATE = .5;
 async function runExp(st, ms = 1900, free = false) {
   const fl = FLOW; if (!free) RUNNING = true; const me = { st: st.slice(), p: 0, r: res(st) }; CUR = me; sfx('run');
+  { const TS = X().id === 'sugar' ? (me.r || 0) : X().id === 'conv' ? 60 : 0; if (TS) ms = Math.max(ms, Math.min(60000, TS * CLOCK_RATE * 1000)); }
   if (X().id === 'band') pluck(me.r);
   if (X().id === 'crash') { const rr = me.r; setTimeout(() => { if (fl !== FLOW || !soundOn) return; const a = ac(); if (!a) return; const t = a.currentTime; tone(110, t, .3, 'square', .06 + rr / 48 * .16, 45); tone(60, t, .35, 'sine', .2, 40); }, ms * .4); }
   const t0 = performance.now();
