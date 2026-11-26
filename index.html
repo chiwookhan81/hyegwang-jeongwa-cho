@@ -33,7 +33,7 @@ document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},t
   /* ⓪ 시작 화면 */
   #start { position: fixed; inset: 0; overflow: hidden; background: #fbf3e4; display: flex; align-items: center; justify-content: center; }
   #start .blur { position: absolute; inset: -40px; background: center/cover no-repeat; filter: blur(28px) saturate(1.1); opacity: .55; }
-  #start .poster { position: relative; height: min(100vh, calc(100vw * 2576 / 1438)); aspect-ratio: 1438 / 2576; box-shadow: 0 0 40px #0002; }
+  #start .poster { position: relative; height: min(100vh, calc(100vw * 2576 / 1438)); width: min(100vw, calc(100vh * 1438 / 2576)); /* 1.1.2: 크롬 83은 aspect-ratio를 몰라 처음에 꽉 차 보였음 → 폭을 직접 줌 */ aspect-ratio: 1438 / 2576; box-shadow: 0 0 40px #0002; }
   #start .poster img { width: 100%; height: 100%; display: block; -webkit-user-drag: none; }
   #start .go { position: absolute; left: 28%; top: 78%; width: 44%; height: 13%; border-radius: 40px; background: transparent; animation: glow2 1.2s infinite alternate; }
   @keyframes glow2 { from { box-shadow: 0 0 0 0 #fde04700; } to { box-shadow: 0 0 30px 10px #fde047aa; } }
@@ -222,7 +222,7 @@ document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},t
     <button class="go" onclick="startTap(event)" aria-label="시작하기"></button>
   </div>
   <button id="introst" style="display:none" onclick="event.stopPropagation();showIntro(true)">🎬 캐릭터 소개 영상</button>
-  <div id="verst">버전 1.1.1</div>
+  <div id="verst">버전 1.1.2</div>
 <script>/* 엔진 버전 표시 (1.1.1): 이 기기가 실제로 쓰는 크롬(웹뷰) 버전을 버전 옆에 보여 줘요 */(function(){try{var m=navigator.userAgent.match(/Chrome\/(\d+)/);var e=document.getElementById("verst");if(e&&m)e.textContent+=" · 엔진 크롬 "+m[1];}catch(x){}})();</script>
   <div id="tapmus" class="hidden">🎵 화면을 누르면 음악이 나와요</div>
 </section>
