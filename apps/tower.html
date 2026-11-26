@@ -2711,7 +2711,7 @@ function appLines() {
 goHome();
 </script>
 <script>
-/* 확인용 표시 (1.1.2, 잠깐만 씀): 월궁탑 문지르기 단계에서 끌기가 왜 끊기는지 화면 왼쪽 아래에 글자로 보여 줘요.
+/* 확인용 표시 (1.1.1, 잠깐만 씀): 월궁탑 문지르기 단계에서 끌기가 왜 끊기는지 화면 왼쪽 아래에 글자로 보여 줘요.
    칠판에서 사진을 찍어 보내면 원인을 찾을 수 있어요. 원인을 찾은 뒤에는 뺄 거예요. */
 (function () {
   var D = { ty: '-', dn: 0, mv: 0, up: 0, cc: 0, lc: 0, ids: {}, nid: 0, last: '-', why: '-', ms: 0, msMax: 0, wasDrag: false, gap: 0, tLast: 0 };
@@ -2722,13 +2722,18 @@ goHome();
   var vis = document.getElementById('vis');
   function on(k, f) { vis.addEventListener(k, f, true); }
   on('pointerdown', function (e) { D.ty = e.pointerType; D.dn++; if (!D.ids[e.pointerId]) { D.ids[e.pointerId] = 1; D.nid++; } D.last = '누름'; D.tLast = performance.now(); });
-  on('pointermove', function (e) { D.mv++; var n = performance.now(); if (D.tLast) D.gap = Math.max(D.gap, Math.round(n - D.tLast)); D.tLast = n; D.last = '끌기'; });
+  on('pointermove', function () { D.mv++; var n = performance.now(); if (D.tLast) D.gap = Math.max(D.gap, Math.round(n - D.tLast)); D.tLast = n; D.last = '끌기'; });
   on('pointerup', function () { D.up++; D.last = '뗌'; });
   on('pointercancel', function () { D.cc++; D.last = '취소(브라우저)'; });
   on('lostpointercapture', function () { D.lc++; if (D.last === '끌기') D.last = '붙잡기 놓침'; });
+  // 그리기 빠르게 (1.1.1): 끄는 동안은 손가락이 움직일 때마다 그리지 않고, 화면이 바뀌는 때(1/60초)에 한 번만 그려요
   try {
-    var rd = redraw;
-    redraw = function () { var a = performance.now(); rd(); var b = Math.round(performance.now() - a); D.ms = b; if (b > D.msMax) D.msMax = b; };
+    var real = redraw, pend = false;
+    var timed = function () { var a = performance.now(); real(); var b = Math.round(performance.now() - a); D.ms = b; if (b > D.msMax) D.msMax = b; };
+    redraw = function () {
+      if (V && V.drag && !DONE) { if (!pend) { pend = true; requestAnimationFrame(function () { pend = false; timed(); }); } return; }
+      timed();
+    };
   } catch (x) {}
   setInterval(function () {
     var rub = (typeof S !== 'undefined') && S && S.type === 'rub';
@@ -2739,7 +2744,7 @@ goHome();
     if (!D.wasDrag && dr) { D.gap = 0; D.msMax = 0; }
     D.wasDrag = dr;
     var tp = (typeof V !== 'undefined' && V) ? V : {};
-    box.textContent = '확인용 1.1.2  손가락:' + D.ty + '  손가락 수:' + D.nid + '\n' +
+    box.textContent = '확인용 1.1.1  손가락:' + D.ty + '  손가락 수:' + D.nid + '\n' +
       '누름 ' + D.dn + ' · 끌기 ' + D.mv + ' · 뗌 ' + D.up + ' · 취소 ' + D.cc + ' · 놓침 ' + D.lc + '\n' +
       '잡음:' + (tp.grab ? '예' : '아니오') + ' · 들어감:' + (tp.ent ? '예' : '아니오') + ' · 끌기중:' + (dr ? '예' : '아니오') + ' · 밖:' + Math.round(tp.out || 0) + '\n' +
       '그리기 ' + D.ms + 'ms(최대 ' + D.msMax + ') · 끌기 사이 최대 ' + D.gap + 'ms\n' +
