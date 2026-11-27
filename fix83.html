@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><title>초승달 전과 옛 엔진 보충</title>
+<!-- 1.1.3 크롬 83(칠판 엔진) 보충. 앱들이 flex 간격(gap)을 모르는 엔진에서만 이 파일을 읽어 써요.
+     되돌리려면: 아래 script 칸을 비운 이 파일을 올리면 돼요. -->
+<script type="text/plain" id="gap83">
+/* 1.1.3 크롬 83 보충: 크롬 83(칠판)은 flex 상자의 gap(간격)을 몰라서 단추·그림이 서로 붙어 보여요.
+   gap을 쓴 flex 상자를 찾아, 안에 든 것들 사이에 바깥 여백(margin)을 대신 넣어요. 새 크롬·폰에서는 돌지 않아요. */
+(function () {
+  var SEL = [], busy = 0, MARK = '__g83';
+  function px(v) { v = parseFloat(v); return v > 0 ? v : 0; }
+  function scanCss() {
+    var out = {}, ss = document.querySelectorAll('style');
+    for (var i = 0; i < ss.length; i++) {
+      var t = ss[i].textContent.replace(/\/\*[\s\S]*?\*\//g, ''), re = /([^{}@]+)\{([^{}]*)\}/g, m;
+      while ((m = re.exec(t))) {
+        if (!/(^|[;\s])(gap|row-gap|column-gap)\s*:/.test(m[2])) continue;
+        var sels = m[1].split(',');
+        for (var k = 0; k < sels.length; k++) { var s = sels[k].trim(); if (s && !/::|:hover|:active|:focus/.test(s)) out[s] = 1; }
+      }
+    }
+    SEL = Object.keys(out); SEL.push('[style*="gap"]');
+  }
+  function reset(c) {
+    var o = c[MARK]; if (!o) return;
+    for (var i = 0; i < o.length; i++) { var e = o[i]; e.el.style.marginLeft = e.ml; e.el.style.marginTop = e.mt; }
+    c[MARK] = null;
+  }
+  function set(c, el, side, v) {
+    var o = c[MARK] || (c[MARK] = []);
+    if (!el.__g83s) { el.__g83s = 1; o.push({ el: el, ml: el.style.marginLeft, mt: el.style.marginTop }); }
+    var cur = getComputedStyle(el)[side === 'l' ? 'marginLeft' : 'marginTop'];
+    if (cur === 'auto') return;
+    var base = px(cur);
+    el.style[side === 'l' ? 'marginLeft' : 'marginTop'] = (base + v) + 'px';
+  }
+  function fix(c) {
+    var cs = getComputedStyle(c);
+    if (cs.display !== 'flex' && cs.display !== 'inline-flex') return;
+    var cg = px(cs.columnGap), rg = px(cs.rowGap);
+    if (!cg && !rg) return;
+    var col = /column/.test(cs.flexDirection), kids = [];
+    for (var i = 0; i < c.children.length; i++) {
+      var k = c.children[i], ks = getComputedStyle(k);
+      if (ks.display === 'none' || ks.position === 'absolute' || ks.position === 'fixed') continue;
+      k.__g83s = 0; kids.push(k);
+    }
+    if (kids.length < 2) return;
+    if (col) { for (var j = 1; j < kids.length; j++) if (rg) set(c, kids[j], 't', rg); return; }
+    var wrap = cs.flexWrap !== 'nowrap';
+    for (var j2 = 1; j2 < kids.length; j2++) if (cg) set(c, kids[j2], 'l', cg);
+    if (!wrap) return;
+    // 줄이 바뀐 것: 줄 첫 것은 넣은 왼쪽 여백을 빼고, 둘째 줄부터는 위 여백(row-gap)을 줘요
+    var top0 = kids[0].getBoundingClientRect().top, prev = top0;
+    for (var j3 = 1; j3 < kids.length; j3++) {
+      var t = kids[j3].getBoundingClientRect().top;
+      if (cg && t > prev + 1) kids[j3].style.marginLeft = (px(getComputedStyle(kids[j3]).marginLeft) - cg) + 'px';
+      if (rg && t > top0 + 1) set(c, kids[j3], 't', rg);
+      prev = t;
+    }
+  }
+  function run() {
+    busy = 0;
+    var list = [];
+    for (var i = 0; i < SEL.length; i++) { var l; try { l = document.querySelectorAll(SEL[i]); } catch (e) { continue; } for (var j = 0; j < l.length; j++) if (list.indexOf(l[j]) < 0) list.push(l[j]); }
+    for (var a = 0; a < list.length; a++) reset(list[a]);
+    for (var b = 0; b < list.length; b++) { try { fix(list[b]); } catch (e) {} }
+  }
+  function later() { if (busy) return; busy = setTimeout(function () { requestAnimationFrame(run); }, 250); }
+  scanCss(); run();
+  addEventListener('resize', later);
+  try {
+    new MutationObserver(function (ms) {
+      for (var i = 0; i < ms.length; i++) {
+        var t = ms[i].target; if (t && t.closest && t.closest('svg,canvas')) continue;
+        if (ms[i].type === 'childList') { if (t && t.tagName === 'STYLE') scanCss(); later(); return; }
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
+})();
+</script>
+</head><body><p>초승달 전과 옛 엔진 보충 파일이에요.</p></body></html>
