@@ -369,9 +369,9 @@ function stopVoice(keepNav) { playToken++; if (!keepNav) VNAV++; VQ = []; VBUSY 
 // ① 목소리가 나오는 중에 단추를 누르면(급한 아이) 하던 말과 줄 선 말을 바로 끊고 새 화면의 말을 해요.
 // ② 말이 다 끝난 뒤에 누르면(천천히 하는 아이) 끊을 것이 없어 설명을 끝까지 다 들어요.
 // ③ 말하는 중에 끊는 일이 두 번 이어지면 급한 아이로 보고, 말 사이 쉼을 2초→0.5초로 줄이고 설명이 끝나길 기다리지 않아요.
-//    말이 끝난 뒤에 누르면 다시 2초로 돌아가요. 빈 곳을 만지는 것은 세지 않아요(단추·스위치 키만).
+//    말이 끝난 뒤에 누르면 다시 2초로 돌아가요. 빈 곳을 만지는 것은 세지 않아요(단추·끌어 옮기는 그림·스위치 키만).
 var TAP_AT = 0, TAP_FRESH = false, CUTS = 0;
-const isBtn = t => { try { return !!(t && t.closest && t.closest('button,a,input,select,label,[onclick],[role="button"],[tabindex]')) || !!(t && t.nodeType === 1 && getComputedStyle(t).cursor === 'pointer'); } catch (e) { return false; } };
+const isBtn = t => { try { return !!(t && t.closest && t.closest('button,a,input,select,label,[onclick],[role="button"],[tabindex]')) || !!(t && t.nodeType === 1 && /pointer|grab|move/.test(getComputedStyle(t).cursor)); } catch (e) { return false; } };
 const FAST = () => CUTS >= 2;
 const VOICE_ON = () => VBUSY || VQ.length > 0;
 function onTap(e) {
