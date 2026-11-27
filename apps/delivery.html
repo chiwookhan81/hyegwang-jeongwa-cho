@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<head>
+<head><script>/* 1.1.3 크롬 83 보충: flex 간격(gap)을 모르는 엔진(칠판)에서만 fix83.html을 읽어 간격을 메워요. 되돌릴 때는 fix83.html만 바꾸면 돼요 */(function(){function need(){var d=document.createElement('div');d.style.cssText='display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden';d.appendChild(document.createElement('div'));d.appendChild(document.createElement('div'));document.body.appendChild(d);var ok=d.scrollHeight===1;d.parentNode.removeChild(d);return !ok}function go(){try{if(!need())return;fetch((/\/apps\//.test(location.pathname)?'../':'')+'fix83.html').then(function(r){return r.ok?r.text():''}).then(function(t){var m=/<script type="text\/plain" id="gap83">([\s\S]*?)<\/script>/.exec(t);if(m&&m[1].trim())new Function(m[1])()}).catch(function(){})}catch(e){}}if(document.readyState==='loading')addEventListener('DOMContentLoaded',go);else go()})();</script>
 <script>/* 칠판 끌기 고침 (2026-11-24): 누른 자리가 다시 그려져 사라져도 끌기가 끊기지 않게 이어 줘요 */
 (function(){if(window.__dragFix)return;window.__dragFix=1;var C=null;
 function fw(e){var t=e.currentTarget;if(t.isConnected||!C||C.n!==t)return;var h=null;for(var i=0;i<C.a.length;i++)if(C.a[i].isConnected){h=C.a[i];break}h=h||document.body;try{h.dispatchEvent(new PointerEvent(e.type,e))}catch(x){}if(e.type!=='pointermove')off()}
