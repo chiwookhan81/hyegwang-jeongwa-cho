@@ -2,7 +2,7 @@
 <html lang="ko">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<head>
+<head><script>/* 1.1.3 크롬 83 보충: flex 간격(gap)을 모르는 엔진(칠판)에서만 fix83.html을 읽어 간격을 메워요. 되돌릴 때는 fix83.html만 바꾸면 돼요 */(function(){function need(){var d=document.createElement('div');d.style.cssText='display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden';d.appendChild(document.createElement('div'));d.appendChild(document.createElement('div'));document.body.appendChild(d);var ok=d.scrollHeight===1;d.parentNode.removeChild(d);return !ok}function go(){try{if(!need())return;fetch((/\/apps\//.test(location.pathname)?'../':'')+'fix83.html').then(function(r){return r.ok?r.text():''}).then(function(t){var m=/<script type="text\/plain" id="gap83">([\s\S]*?)<\/script>/.exec(t);if(m&&m[1].trim())new Function(m[1])()}).catch(function(){})}catch(e){}}if(document.readyState==='loading')addEventListener('DOMContentLoaded',go);else go()})();</script>
 <script>/* 칠판 끌기 고침 (2026-11-24): 누른 자리가 다시 그려져 사라져도 끌기가 끊기지 않게 이어 줘요 */
 (function(){if(window.__dragFix)return;window.__dragFix=1;var C=null;
 function fw(e){var t=e.currentTarget;if(t.isConnected||!C||C.n!==t)return;var h=null;for(var i=0;i<C.a.length;i++)if(C.a[i].isConnected){h=C.a[i];break}h=h||document.body;try{h.dispatchEvent(new PointerEvent(e.type,e))}catch(x){}if(e.type!=='pointermove')off()}
@@ -12,7 +12,7 @@ document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},t
 })();</script>
 
 <title>월궁탑</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap" media="print" onload="this.media='all'">
+<script>/* 1.1.3 글꼴: 화면이 다 뜬 뒤 fonts.html에서 주아체·싱글데이를 불러와요. 되돌릴 때는 fonts.html만 바꾸면 돼요 */(function(){var T=1;function go(){try{fetch((/\/apps\//.test(location.pathname)?'../':'')+'fonts.html').then(function(r){return r.ok?r.text():''}).then(function(t){var re=/<style id="(body|title)"[^>]*>([\s\S]*?)<\/style>/g,m,c='';while((m=re.exec(t)))if(m[1]==='body'||T)c+=m[2];if(!c)return;var s=document.createElement('style');s.id='hgfont';s.textContent=c;document.head.appendChild(s)}).catch(function(){})}catch(e){}}function later(){setTimeout(go,700)}if(document.readyState==='complete')later();else addEventListener('load',later)})();</script>
 <style>
   img.emi { height: 1.18em; width: auto; vertical-align: -.22em; display: inline-block; pointer-events: none; }
   :root { --font: 'Jua', 'Malgun Gothic', sans-serif; --emo: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif; }
@@ -87,7 +87,7 @@ document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},t
     <div style="position:absolute;right:20px;top:16px;display:flex;gap:6px;align-items:center"><select id="voice-sel" onchange="pickVoice(this.value)" style="font-family:var(--font);font-size:15px;max-width:170px;border-radius:12px;border:2px solid #c4b5fd;padding:5px"></select><button class="btn2" onclick="toggleSound()" id="snd-home" style="font-size:18px">🔊 소리 켜짐</button></div>
     <div id="zones" style="position:absolute;left:24px;top:104px;display:flex;gap:10px"></div>
     <div id="floors"></div>
-    <div style="position:absolute;left:150px;bottom:8px;font-size:12px;color:#64748b"><span id="staff">Creator <b>KCS</b></span> <span id="ver">· 월궁탑202611131421</span> <span style="font-size:11px">· 장구·도구 소리: 공유마당 ((재)전주정보문화산업진흥원·JICA 공공누리 1유형, 한국저작권위원회 CC BY) · 비영리 교육용</span> <span id="rec-credit"></span> <button class="btn2" onclick="resetAll()" style="font-size:14px;padding:4px 10px;margin-left:8px">처음부터 다시</button> <span id="tot" style="font-size:17px;color:#4c1d95;margin-left:8px"></span></div>
+    <div style="position:absolute;left:150px;bottom:8px;font-size:12px;color:#64748b"><span id="staff">Creator <b>KCS</b></span> <span id="ver">· 초등 초승달 전과 1.1.3</span> <span style="font-size:11px">· 장구·도구 소리: 공유마당 ((재)전주정보문화산업진흥원·JICA 공공누리 1유형, 한국저작권위원회 CC BY) · 비영리 교육용</span> <span id="rec-credit"></span> <button class="btn2" onclick="resetAll()" style="font-size:14px;padding:4px 10px;margin-left:8px">처음부터 다시</button> <span id="tot" style="font-size:17px;color:#4c1d95;margin-left:8px"></span></div>
   </div>
 
   <!-- 층 소개 -->
