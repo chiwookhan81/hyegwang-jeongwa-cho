@@ -320,7 +320,7 @@ function say(html, who, audio) { HELPER = who || HELPER; const c = CHARS[HELPER]
 const OL = 'stroke="#334155" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"';
 const TOOLART = {
   glue: o => `<rect x="-26" y="-50" width="52" height="110" rx="10" fill="#facc15" ${OL}/><rect x="-26" y="10" width="52" height="16" fill="#ef4444"/>` +
-    (o.open ? `<rect x="-20" y="-78" width="40" height="${30 + (o.up || 0)}" rx="6" fill="#fff" ${OL}/>` : `<rect x="-30" y="-92" width="60" height="46" rx="10" fill="#ef4444" ${OL}/>`) + `<rect x="-26" y="44" width="52" height="16" rx="4" fill="#ca8a04"/>`,
+    (o.open ? `<rect x="-20" y="${-78 - (o.up || 0)}" width="40" height="${30 + (o.up || 0)}" rx="6" fill="#fff" ${OL}/>` : `<rect x="-30" y="-92" width="60" height="46" rx="10" fill="#ef4444" ${OL}/>`) + `<rect x="-26" y="44" width="52" height="16" rx="4" fill="#ca8a04"/>`,
   scissors: o => { const a = o.open ?? 14, bl = (m) => `<path d="M${-7 * m},6 Q${-9 * m},-40 ${-1 * m},-112 Q${8 * m},-60 ${7 * m},-2 Z" fill="${m < 0 ? '#e2e8f0' : '#cbd5e1'}" stroke="#475569" stroke-width="3" stroke-linejoin="round"/><path d="M${-2 * m},-6 Q${-2 * m},-50 ${-1 * m},-100" stroke="#fff" stroke-width="2" opacity=".8" fill="none"/>`;
     return `<g transform="rotate(${-a / 2})">${bl(-1)}<path d="M4,4 L18,34" stroke="#eab308" stroke-width="12" stroke-linecap="round"/><ellipse cx="26" cy="54" rx="21" ry="27" fill="none" stroke="#eab308" stroke-width="11"/></g><g transform="rotate(${a / 2})">${bl(1)}<path d="M-4,4 L-15,30" stroke="#2563eb" stroke-width="12" stroke-linecap="round"/><ellipse cx="-22" cy="46" rx="15" ry="19" fill="none" stroke="#2563eb" stroke-width="10"/></g><circle r="7" fill="#64748b" stroke="#334155" stroke-width="2"/><circle r="2.5" fill="#e2e8f0"/>`; },
   ruler: o => `<rect x="-110" y="-20" width="220" height="40" rx="5" fill="${o.steel ? '#cbd5e1' : '#fde68a'}" ${OL}/>` + [...Array(21)].map((_, i) => `<line x1="${-100 + i * 10}" y1="-20" x2="${-100 + i * 10}" y2="${i % 5 ? -10 : -2}" stroke="#334155" stroke-width="2"/>`).join(''),
@@ -813,7 +813,7 @@ P.rub = {
     if (G >= 4 && !DONE) o += arrow(x + 20, y + h + 40, x + w - 20, y + h + 40, '#16a34a');
     { const tp = V.last || (!DONE && !s.noTool ? rubRest(s) : null);   // 도구는 처음부터 칠할 곳 옆에 놓여 있어요 (1.1.0)
       if (tp && !s.noTool) { const gp = rubGrabPt(s, tp); if (!V.last) o += `<circle cx="${gp[0]}" cy="${gp[1]}" r="58" fill="#fde68a" opacity="${.35 + .25 * Math.sin(Date.now() / 300)}"/>` + pill(gp[0], gp[1] + 78, '잡고 끌어요', '#b45309', 16);
-        o += `<g style="pointer-events:none">${tool(s.tool || 'glue', tp[0], tp[1] - (s.tool === 'sandpaper' ? 0 : 50), s.tool === 'sandpaper' ? .4 : .5, s.tool === 'sandpaper' ? 0 : 20, { open: 1 })}</g>`; } }
+        o += `<g style="pointer-events:none">${(s.tool || 'glue') === 'glue' ? (q => tool('glue', q[0], q[1], .5, 20, { open: 1, up: 6 }))(glueAt(tp)) : tool(s.tool, tp[0], tp[1] - (s.tool === 'sandpaper' ? 0 : 50), s.tool === 'sandpaper' ? .4 : .5, s.tool === 'sandpaper' ? 0 : 20, { open: 1 })}</g>`; } }
     if (DONE && s.done) o += s.done(V);
     return o;
   },
@@ -840,7 +840,9 @@ P.rub = {
 function rubRest(s) { const [x, y, w, h] = s.region, sp = s.tool === 'sandpaper'; let tx, ty = y + h / 2 + (sp ? 0 : 40);
   if (860 - (x + w) >= 120) tx = x + w + 70; else if (x >= 120) tx = x - 70; else { tx = Math.min(800, x + w - 40); ty = Math.min(470, y + h + (sp ? 60 : 110)); }
   return [tx, Math.max(sp ? 60 : 110, Math.min(sp ? 470 : 500, ty))]; }
-function rubGrabPt(s, tp) { return s.tool === 'sandpaper' ? tp : [tp[0] + 10, tp[1] - 40]; }
+// 딱풀은 풀 끝(흰 부분 맨 위)이 칠하는 자리 tp에 오도록 몸통 자리를 셈 (1.1.3)
+function glueAt(tp) { const r = 20 * Math.PI / 180, L = (78 + 6) * .5; return [tp[0] - L * Math.sin(r), tp[1] + L * Math.cos(r)]; }
+function rubGrabPt(s, tp) { return s.tool === 'sandpaper' ? tp : (s.tool || 'glue') === 'glue' ? glueAt(tp) : [tp[0] + 10, tp[1] - 40]; }
 // 12. 각도 맞추기 (구부리기)
 P.angle = {
   init: s => ({ a: 0, drag: false }),
@@ -2711,46 +2713,15 @@ function appLines() {
 goHome();
 </script>
 <script>
-/* 확인용 표시 (1.1.1, 잠깐만 씀): 월궁탑 문지르기 단계에서 끌기가 왜 끊기는지 화면 왼쪽 아래에 글자로 보여 줘요.
-   칠판에서 사진을 찍어 보내면 원인을 찾을 수 있어요. 원인을 찾은 뒤에는 뺄 거예요. */
-(function () {
-  var D = { ty: '-', dn: 0, mv: 0, up: 0, cc: 0, lc: 0, ids: {}, nid: 0, last: '-', why: '-', ms: 0, msMax: 0, wasDrag: false, gap: 0, tLast: 0 };
-  var box = document.createElement('div');
-  box.style.cssText = 'position:fixed;left:6px;bottom:6px;z-index:99999;pointer-events:none;background:rgba(255,255,255,.9);color:#111;' +
-    'font:14px/1.35 monospace;padding:4px 8px;border:2px solid #7c3aed;border-radius:8px;white-space:pre;display:none';
-  document.body.appendChild(box);
-  var vis = document.getElementById('vis');
-  function on(k, f) { vis.addEventListener(k, f, true); }
-  on('pointerdown', function (e) { D.ty = e.pointerType; D.dn++; if (!D.ids[e.pointerId]) { D.ids[e.pointerId] = 1; D.nid++; } D.last = '누름'; D.tLast = performance.now(); });
-  on('pointermove', function () { D.mv++; var n = performance.now(); if (D.tLast) D.gap = Math.max(D.gap, Math.round(n - D.tLast)); D.tLast = n; D.last = '끌기'; });
-  on('pointerup', function () { D.up++; D.last = '뗌'; });
-  on('pointercancel', function () { D.cc++; D.last = '취소(브라우저)'; });
-  on('lostpointercapture', function () { D.lc++; if (D.last === '끌기') D.last = '붙잡기 놓침'; });
-  // 그리기 빠르게 (1.1.1): 끄는 동안은 손가락이 움직일 때마다 그리지 않고, 화면이 바뀌는 때(1/60초)에 한 번만 그려요
-  try {
-    var real = redraw, pend = false;
-    var timed = function () { var a = performance.now(); real(); var b = Math.round(performance.now() - a); D.ms = b; if (b > D.msMax) D.msMax = b; };
-    redraw = function () {
-      if (V && V.drag && !DONE) { if (!pend) { pend = true; requestAnimationFrame(function () { pend = false; timed(); }); } return; }
-      timed();
-    };
-  } catch (x) {}
-  setInterval(function () {
-    var rub = (typeof S !== 'undefined') && S && S.type === 'rub';
-    box.style.display = rub ? '' : 'none';
-    if (!rub) return;
-    var dr = !!(typeof V !== 'undefined' && V && V.drag);
-    if (D.wasDrag && !dr) D.why = (D.last === '끌기' ? '앱이 멈춤' : D.last);
-    if (!D.wasDrag && dr) { D.gap = 0; D.msMax = 0; }
-    D.wasDrag = dr;
-    var tp = (typeof V !== 'undefined' && V) ? V : {};
-    box.textContent = '확인용 1.1.1  손가락:' + D.ty + '  손가락 수:' + D.nid + '\n' +
-      '누름 ' + D.dn + ' · 끌기 ' + D.mv + ' · 뗌 ' + D.up + ' · 취소 ' + D.cc + ' · 놓침 ' + D.lc + '\n' +
-      '잡음:' + (tp.grab ? '예' : '아니오') + ' · 들어감:' + (tp.ent ? '예' : '아니오') + ' · 끌기중:' + (dr ? '예' : '아니오') + ' · 밖:' + Math.round(tp.out || 0) + '\n' +
-      '그리기 ' + D.ms + 'ms(최대 ' + D.msMax + ') · 끌기 사이 최대 ' + D.gap + 'ms\n' +
-      '끝난 까닭: ' + D.why;
-  }, 200);
-})();
+/* 그리기 빠르게 (1.1.1): 도구를 끄는 동안은 손가락이 움직일 때마다 그리지 않고, 화면이 바뀌는 때(1/60초)에 한 번만 그려요.
+   칠판(크롬 83)에서 끌기가 끊기던 것을 이것으로 고쳤어요 (11/27 칠판 확인: 취소 0번). */
+(function () { try {
+  var real = redraw, pend = false;
+  redraw = function () {
+    if (V && V.drag && !DONE) { if (!pend) { pend = true; requestAnimationFrame(function () { pend = false; real(); }); } return; }
+    real();
+  };
+} catch (x) {} })();
 </script>
 <script>
 // 초승달 전과로 돌아가는 단추 (늘 보여요): ◀ 이전 = 이 앱의 소개 화면, 🏠 홈 = 앱 고르기 화면

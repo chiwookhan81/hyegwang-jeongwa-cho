@@ -742,7 +742,7 @@ function payNow(){if(!S.addr){toast("배달 받을 주소를 골라 주세요");
  if(S.sheet.pay==="연습 카드"&&SET.pw){S.pw="";S.modal="pay";S.hint=0;renderModal()}else finishPay()}
 function pk(k){if(k==="")return;if(k==="⌫")S.pw=S.pw.slice(0,-1);else if(S.pw.length<6)S.pw+=k;renderModal();
  if(S.pw.length===6)setTimeout(finishPay,250)}
-function finishPay(){S.modal="paying";renderModal();setTimeout(()=>{const s=st(S.cart.store),sum=cartSum(),c=COUPONS[S.sheet.coupon];
+function finishPay(){if(finishPay.busy)return;finishPay.busy=1;/* 1.1.3: 결제가 두 번 눌려도 한 번만 (두 번째에 빈 장바구니를 읽어 오류 창이 떴음) */S.modal="paying";renderModal();setTimeout(()=>{finishPay.busy=0;if(!S.cart.store||!S.cart.items.length){S.modal=null;renderModal();return}const s=st(S.cart.store),sum=cartSum(),c=COUPONS[S.sheet.coupon];
  const dur={fast:20000,mid:60000,slow:180000}[SET.speed];
  const o={id:Date.now(),store:s.id,items:JSON.parse(JSON.stringify(S.cart.items)),addr:S.addr,rider:S.sheet.rider,storeReq:S.sheet.store,spoon:S.sheet.spoon,pay:S.sheet.pay,coupon:c[1],total:sum+s.tip-c[1],start:Date.now(),dur,rv:null,told:0};
  if(S.mission)o.res=check(S.mission,o);
