@@ -2,7 +2,8 @@
 <html lang="ko">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<head><script>/* 1.1.3 크롬 83 보충: flex 간격(gap)을 모르는 엔진(칠판)에서만 fix83.html을 읽어 간격을 메워요. 되돌릴 때는 fix83.html만 바꾸면 돼요 */(function(){function need(){var d=document.createElement('div');d.style.cssText='display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden';d.appendChild(document.createElement('div'));d.appendChild(document.createElement('div'));document.body.appendChild(d);var ok=d.scrollHeight===1;d.parentNode.removeChild(d);return !ok}function go(){try{if(!need())return;fetch((/\/apps\//.test(location.pathname)?'../':'')+'fix83.html').then(function(r){return r.ok?r.text():''}).then(function(t){var m=/<script type="text\/plain" id="gap83">([\s\S]*?)<\/script>/.exec(t);if(m&&m[1].trim())new Function(m[1])()}).catch(function(){})}catch(e){}}if(document.readyState==='loading')addEventListener('DOMContentLoaded',go);else go()})();</script>
+<head><script>/* 1.2.0 앱을 내리면(최소화) 소리를 멈춰요: 읽어 주기·녹음 목소리·효과음·반복 음악. 돌아오면 반복 음악만 다시 나와요 */(function(){if(window.__hubHide)return;window.__hubHide=1;var A=[];try{['AudioContext','webkitAudioContext'].forEach(function(n){var C=window[n];if(!C||C.__hubW)return;var W=function(a){var c=a===undefined?new C():new C(a);A.push(c);return c};W.prototype=C.prototype;W.__hubW=1;try{Object.setPrototypeOf(W,C)}catch(e){}window[n]=W})}catch(e){}var L=[];document.addEventListener('visibilitychange',function(){if(document.hidden){try{speechSynthesis.cancel()}catch(e){}try{if(typeof window.stopVoice==='function')window.stopVoice()}catch(e){}A.forEach(function(c){try{if(c.state==='running'){c.suspend();c.__hubS=1}}catch(e){}});Array.prototype.forEach.call(document.querySelectorAll('audio,video'),function(m){if(m.srcObject||m.paused)return;try{m.pause();if(m.loop)L.push(m)}catch(e){}})}else{A.forEach(function(c){try{if(c.__hubS){c.__hubS=0;c.resume()}}catch(e){}});L.splice(0).forEach(function(m){try{m.play()}catch(e){}})}})})();</script><script>/* 1.2.0: 읽어 주기에서 단위(cm·kg·mL·℃ 등)를 우리말로 읽어요 */function unitKo(t){return String(t).replace(/\s*(°C|℃)/g,' 도').replace(/\s*°/g,' 도').replace(/(^|[^A-Za-z])(cm|mm|km|kg|mL|ml|g|L|m)(?=[^A-Za-z0-9자]|$)/g,function(m,a,u){return a+' '+{cm:'센티미터',mm:'밀리미터',km:'킬로미터',kg:'킬로그램',mL:'밀리리터',ml:'밀리리터',g:'그램',L:'리터',m:'미터'}[u]})}</script>
+<script>/* 1.1.3 크롬 83 보충: flex 간격(gap)을 모르는 엔진(칠판)에서만 fix83.html을 읽어 간격을 메워요. 되돌릴 때는 fix83.html만 바꾸면 돼요 */(function(){function need(){var d=document.createElement('div');d.style.cssText='display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden';d.appendChild(document.createElement('div'));d.appendChild(document.createElement('div'));document.body.appendChild(d);var ok=d.scrollHeight===1;d.parentNode.removeChild(d);return !ok}function go(){try{if(!need())return;fetch((/\/apps\//.test(location.pathname)?'../':'')+'fix83.html').then(function(r){return r.ok?r.text():''}).then(function(t){var m=/<script type="text\/plain" id="gap83">([\s\S]*?)<\/script>/.exec(t);if(m&&m[1].trim())new Function(m[1])()}).catch(function(){})}catch(e){}}if(document.readyState==='loading')addEventListener('DOMContentLoaded',go);else go()})();</script>
 <script>/* 칠판 끌기 고침 (2026-11-24): 누른 자리가 다시 그려져 사라져도 끌기가 끊기지 않게 이어 줘요 */
 (function(){if(window.__dragFix)return;window.__dragFix=1;var C=null;
 function fw(e){var t=e.currentTarget;if(t.isConnected||!C||C.n!==t)return;var h=null;for(var i=0;i<C.a.length;i++)if(C.a[i].isConnected){h=C.a[i];break}h=h||document.body;try{h.dispatchEvent(new PointerEvent(e.type,e))}catch(x){}if(e.type!=='pointermove')off()}
@@ -293,7 +294,7 @@ const T=[
 
 
 /* ───────────── 읽어 주기 ───────────── */
-function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(unitKo(t));u.lang='ko-KR';u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
 function sayBtn(t){return `<button class="say" onclick="speak(this.dataset.t)" data-t="${t.replace(/"/g,'&quot;')}">🔊 읽어 줘</button>`}
 
 /* ───────────── 아이 특성과 맞춤 방법 ───────────── */
@@ -452,7 +453,7 @@ function home(){hush();S.stu=null;S.traits=[];
   </div>
   <div class="guide">💡 <b>처음 쓰는 선생님께</b> — <b>미술 수업 하기</b>를 누르고 ① 학생 고르기 ② 아이 특성 고르기 ③ 추천 기법 고르기만 하면 돼요. 준비물, 아이에 맞춘 방법, 수업 순서는 앱이 알려 줘요. 태블릿을 책상 옆에 세워 두면 아이가 화면을 보며 따라 해요.</div>
   <p class="sub" style="font-size:15px;margin-top:10px">학생 이름과 작품 사진은 이 기기에만 저장되고 밖으로 나가지 않아요.</p>
-  <div style="margin-top:16px"><span class="credit">✨ 크리에이터 <span style="color:#e8534a">강천석</span></span></div>
+  <div style="margin-top:16px"><span class="credit">✨ 크리에이터 <span style="color:#0891d0">강천석</span></span></div>
  </section>`;scrollTop()}
 
 /* ───────────── ① 누구랑 ───────────── */

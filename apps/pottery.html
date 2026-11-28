@@ -2,7 +2,8 @@
 <html lang="ko">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<head><script>/* 1.1.3 크롬 83 보충: flex 간격(gap)을 모르는 엔진(칠판)에서만 fix83.html을 읽어 간격을 메워요. 되돌릴 때는 fix83.html만 바꾸면 돼요 */(function(){function need(){var d=document.createElement('div');d.style.cssText='display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden';d.appendChild(document.createElement('div'));d.appendChild(document.createElement('div'));document.body.appendChild(d);var ok=d.scrollHeight===1;d.parentNode.removeChild(d);return !ok}function go(){try{if(!need())return;fetch((/\/apps\//.test(location.pathname)?'../':'')+'fix83.html').then(function(r){return r.ok?r.text():''}).then(function(t){var m=/<script type="text\/plain" id="gap83">([\s\S]*?)<\/script>/.exec(t);if(m&&m[1].trim())new Function(m[1])()}).catch(function(){})}catch(e){}}if(document.readyState==='loading')addEventListener('DOMContentLoaded',go);else go()})();</script>
+<head><script>/* 1.2.0 앱을 내리면(최소화) 소리를 멈춰요: 읽어 주기·녹음 목소리·효과음·반복 음악. 돌아오면 반복 음악만 다시 나와요 */(function(){if(window.__hubHide)return;window.__hubHide=1;var A=[];try{['AudioContext','webkitAudioContext'].forEach(function(n){var C=window[n];if(!C||C.__hubW)return;var W=function(a){var c=a===undefined?new C():new C(a);A.push(c);return c};W.prototype=C.prototype;W.__hubW=1;try{Object.setPrototypeOf(W,C)}catch(e){}window[n]=W})}catch(e){}var L=[];document.addEventListener('visibilitychange',function(){if(document.hidden){try{speechSynthesis.cancel()}catch(e){}try{if(typeof window.stopVoice==='function')window.stopVoice()}catch(e){}A.forEach(function(c){try{if(c.state==='running'){c.suspend();c.__hubS=1}}catch(e){}});Array.prototype.forEach.call(document.querySelectorAll('audio,video'),function(m){if(m.srcObject||m.paused)return;try{m.pause();if(m.loop)L.push(m)}catch(e){}})}else{A.forEach(function(c){try{if(c.__hubS){c.__hubS=0;c.resume()}}catch(e){}});L.splice(0).forEach(function(m){try{m.play()}catch(e){}})}})})();</script><script>/* 1.2.0: 읽어 주기에서 단위(cm·kg·mL·℃ 등)를 우리말로 읽어요 */function unitKo(t){return String(t).replace(/\s*(°C|℃)/g,' 도').replace(/\s*°/g,' 도').replace(/(^|[^A-Za-z])(cm|mm|km|kg|mL|ml|g|L|m)(?=[^A-Za-z0-9자]|$)/g,function(m,a,u){return a+' '+{cm:'센티미터',mm:'밀리미터',km:'킬로미터',kg:'킬로그램',mL:'밀리리터',ml:'밀리리터',g:'그램',L:'리터',m:'미터'}[u]})}</script>
+<script>/* 1.1.3 크롬 83 보충: flex 간격(gap)을 모르는 엔진(칠판)에서만 fix83.html을 읽어 간격을 메워요. 되돌릴 때는 fix83.html만 바꾸면 돼요 */(function(){function need(){var d=document.createElement('div');d.style.cssText='display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden';d.appendChild(document.createElement('div'));d.appendChild(document.createElement('div'));document.body.appendChild(d);var ok=d.scrollHeight===1;d.parentNode.removeChild(d);return !ok}function go(){try{if(!need())return;fetch((/\/apps\//.test(location.pathname)?'../':'')+'fix83.html').then(function(r){return r.ok?r.text():''}).then(function(t){var m=/<script type="text\/plain" id="gap83">([\s\S]*?)<\/script>/.exec(t);if(m&&m[1].trim())new Function(m[1])()}).catch(function(){})}catch(e){}}if(document.readyState==='loading')addEventListener('DOMContentLoaded',go);else go()})();</script>
 <script>/* 칠판 끌기 고침 (2026-11-24): 누른 자리가 다시 그려져 사라져도 끌기가 끊기지 않게 이어 줘요 */
 (function(){if(window.__dragFix)return;window.__dragFix=1;var C=null;
 function fw(e){var t=e.currentTarget;if(t.isConnected||!C||C.n!==t)return;var h=null;for(var i=0;i<C.a.length;i++)if(C.a[i].isConnected){h=C.a[i];break}h=h||document.body;try{h.dispatchEvent(new PointerEvent(e.type,e))}catch(x){}if(e.type!=='pointermove')off()}
@@ -1432,7 +1433,7 @@ button:not(:disabled), [role="button"]:not(:disabled) {
     <button onclick="goToStep(2)" class="bg-amber-700 hover:bg-amber-800 text-white text-xl font-bold px-12 py-5 rounded-2xl shadow-lg transition-transform transform hover:scale-105">
       시작하기 🎨
     </button>
-    <div class="mt-10"><span style="display:inline-block;background:rgba(255,255,255,.88);color:#7c2d12;font-size:19px;padding:5px 20px;border-radius:99px;box-shadow:0 3px 8px rgba(90,40,10,.18)">✨ 크리에이터 <span style="color:#e8534a">강천석</span></span></div>
+    <div class="mt-10"><span style="display:inline-block;background:rgba(255,255,255,.88);color:#7c2d12;font-size:19px;padding:5px 20px;border-radius:99px;box-shadow:0 3px 8px rgba(90,40,10,.18)">✨ 크리에이터 <span style="color:#0891d0">강천석</span></span></div>
   </div>
 
   <!-- [화면 2] 대분류 -->
@@ -2117,7 +2118,7 @@ function speakStep() {
   const st = guideSteps[guideIdx];
   const tip = (st.tip || '').replace(/\(?👩‍🏫[^)]*\)?/gu, '').trim();   // 선생님용 글은 읽지 않아요
   const text = [st.title, st.teacher ? '선생님과 함께해요' : '', ...st.lines.map(l => l.replace(/^•/, '').replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF]/gu, '')), tip ? '도움말. ' + tip : '', st.caution ? '조심해요. ' + st.caution : ''].filter(Boolean).join('. ').replace(/\.(\s*\.)+/g, '.');
-  const u = new SpeechSynthesisUtterance(text);
+  const u = new SpeechSynthesisUtterance(unitKo(text));
   u.lang = 'ko-KR'; u.rate = 0.85;
   speechSynthesis.speak(u);
 }
