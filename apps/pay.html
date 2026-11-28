@@ -152,7 +152,7 @@ document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},t
       <button class="btn2" onclick="openSet()" style="font-size:18px"><span data-a="gear" data-s="24"></span> 선생님 설정 <span id="set-sum" style="color:#7c3aed"></span></button>
     </div>
     <div id="shops"></div>
-    <div style="position:absolute;left:24px;bottom:12px;font-size:13px;color:#64748b"><span id="staff">✨ 크리에이터 <b style="color:#0891d0">강천석</b></span> <span id="ver"></span> <button class="btn2" onclick="askReset()" style="font-size:14px;padding:4px 10px;margin-left:8px">처음부터 다시</button></div>
+    <div style="position:absolute;left:24px;bottom:12px;font-size:13px;color:#64748b"><span id="staff">✨ 크리에이터 <b style="color:#0891d0">강천석</b></span> <button class="btn2" onclick="askReset()" style="font-size:14px;padding:4px 10px;margin-left:8px">처음부터 다시</button></div>
   </div>
 
   <!-- 연습 화면 -->
@@ -252,7 +252,6 @@ document.addEventListener('pointerup',function(e){if(C&&C.n.isConnected)off()},t
 
 <script>
 const $ = id => document.getElementById(id);
-const VERSION = 'v 2026.11.16 09:37';
 const stage = $('stage'); let SC = 1;
 function fit() {
   const vv = window.visualViewport, W = vv ? vv.width : innerWidth, H = vv ? vv.height : innerHeight;
@@ -603,7 +602,6 @@ const item = (st, id) => allItems(st).find(i => i.id === id);
 
 // ===================== 처음 화면 =====================
 document.querySelectorAll('img[data-char]').forEach(im => im.src = CHARS[im.dataset.char].img);
-$('ver').innerText = '· ' + VERSION;
 function renderHome() {
   const gap = 12, w = Math.min(232, (1280 - 48 - gap * (STORES.length - 1)) / STORES.length);
   $('shops').innerHTML = STORES.map((s, i) => `<button class="shop" style="width:${w}px;left:${24 + i * (w + gap)}px;border-color:${s.c}" onclick="openLv('${s.id}')">

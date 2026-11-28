@@ -123,7 +123,7 @@ select.field{appearance:none;-webkit-appearance:none}
 .widget{background:rgba(255,255,255,.85);border-radius:20px;padding:14px;margin-bottom:18px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .wtitle{font-size:24px;font-weight:900;color:#1257b8;margin-bottom:6px}
 .widget>b{display:block;font-size:18px;margin-bottom:4px}.widget>span{display:block;font-size:14px;color:#555;margin-bottom:10px;line-height:1.45}
-.widget .badges{justify-content:flex-start;margin:0}.widget .badges span{font-size:12.5px;background:#fff}
+.widget .badges{justify-content:flex-start;margin:0}.widget .badges>span{font-size:12.5px;background:#fff}
 .apps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 6px}
 .app{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#222}
 .aic{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;box-shadow:0 3px 8px rgba(0,0,0,.18);color:#fff}
@@ -224,7 +224,7 @@ select.field{appearance:none;-webkit-appearance:none}
 .logo span{display:block;font-size:62px}
 .sub{text-align:center;color:#555;margin:6px 0 18px;line-height:1.5}
 .badges{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px}
-.badges span{font-size:13.5px;background:#f2f5f5;border-radius:16px;padding:6px 10px}
+.badges>span{font-size:13.5px;background:#f2f5f5;border-radius:16px;padding:6px 10px}
 .how{background:#f7f9f9;border-radius:14px;padding:14px 14px 6px;margin-bottom:12px}
 .how h3{font-size:16px;margin-bottom:8px}
 .how li{list-style:none;display:flex;gap:10px;align-items:center;padding:6px 0;font-size:15px;line-height:1.4}
@@ -570,6 +570,7 @@ V.intro=()=>`<div class="scroll"><div class="intro">
 <li><i>⭐</i>배달이 오면 리뷰를 써 봐요.</li>
 <li><i>💡</i><span>막히면 <b>힌트</b>를 눌러요. 누를수록 자세히 알려 줘요.</span></li></ul></div>
 <p class="small">· 카드 번호, 이름, 전화번호 같은 개인 정보를 묻지 않아요.<br>· 고른 내용은 이 화면 안에서만 쓰이고 어디로도 보내지 않아요. (선생님 설정만 이 기기에 저장돼요)<br>· 가게·메뉴·가격은 연습용으로 지어낸 것이에요.</p>
+<div style="text-align:center;margin:10px 0 6px"><span style="display:inline-block;background:rgba(255,255,255,.88);color:#2a5a8c;font-size:16px;padding:5px 20px;border-radius:99px;box-shadow:0 3px 8px rgba(10,40,90,.18);white-space:nowrap">✨ 크리에이터 <b style="color:#0891d0">강천석</b></span></div>
 <div class="btns"><button class="big" onclick="startFree()">🍽️ 자유롭게 연습하기</button>
 <button class="big sec2" onclick="go('missions')">🎯 미션 연습하기</button>
 <button class="big gray" onclick="go('settings')">⚙️ 선생님 설정</button>
@@ -579,7 +580,7 @@ V.phone=()=>{const now=new Date(),tm=now.getHours()+":"+String(now.getMinutes())
  const ic=(e,n,bg,fn,h)=>`<button class="app" ${h?`data-h="${h}"`:""} onclick="${fn}"><span class="aic" style="background:${bg}">${e}</span>${n}</button>`;
  return `<div class="phone-bg"><div class="sbar"><b>${tm}</b><span>📶 🔋</span></div>
 <div class="widget"><div class="wtitle">배달 ♡이츠</div><b>📱 배달 앱을 눌러서 들어가요</b><span>어떤 앱으로 주문할지 골라 보세요. 두 앱은 생김새가 달라요.</span>
-<div class="badges"><span>📶 인터넷 필요 없음</span><span>🔒 권한 필요 없음</span><span>🛡️ 정보 유출 없음</span><span>👆 터치만으로 가능</span><span>📖 글 읽기 필요 (읽어주기 지원)</span></div></div>
+<div class="badges"><span>📶 인터넷 필요 없음</span><span>🔒 권한 필요 없음</span><span>🛡️ 정보 유출 없음</span><span>👆 터치만으로 가능</span><span>📖 글 읽기 필요 (읽어주기 지원)</span></div><div style="margin-top:6px;font-size:13px;color:#2a5a8c">✨ 크리에이터 <b style="color:#0891d0">강천석</b></div></div>
 <div class="apps">${ic(APPS.hg.e,"밤섬배달",APPS.hg.bg,"openApp('hg')","app-hg")}${ic(APPS.eats.e,"밤섬이츠",APPS.eats.bg,"openApp('eats')","app-eats")}
 ${ic("📷","카메라","#555","dummyApp()")}${ic("💬","메시지","#34c759","dummyApp()")}
 ${ic("🗓️","달력","#ff9f0a","dummyApp()")}${ic("🎵","음악","#ff375f","dummyApp()")}
